@@ -13,8 +13,6 @@ void initSensors() {
   pinMode(S_LEFT, INPUT);
   pinMode(S_FRONT, INPUT);
   pinMode(S_RIGHT, INPUT);
-
-  attachInterrupt(S_LEFT, updateSensors, CHANGE);
 }
 
 void updateSensors() {
