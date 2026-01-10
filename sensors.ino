@@ -16,25 +16,30 @@ void initSensors() {
 }
 
 void updateSensors() {
-  // read the sensors unlit
+  // --- 1. READ SIDE SENSORS ---
   int l_unlit = analogRead(S_LEFT);
-  int f_unlit = analogRead(S_FRONT);
   int r_unlit = analogRead(S_RIGHT);
 
-  // turn on the emitters
   digitalWrite(E_LEFT_RIGHT, HIGH);
-  digitalWrite(E_FRONT, HIGH);
+  delayMicroseconds(75); 
 
-  // wait for sensors to stabilize
-  delayMicroseconds(50);
-
-  // read the sensors and subtract the unlit value
-  leftSensorValue = analogRead(S_LEFT) - l_unlit;
-  frontSensorValue = analogRead(S_FRONT) - f_unlit;
-  rightSensorValue = analogRead(S_RIGHT) - r_unlit;
+  // Calculate difference and ensure it's not negative
+  leftSensorValue = max(0, (int)analogRead(S_LEFT) - l_unlit);
+  rightSensorValue = max(0, (int)analogRead(S_RIGHT) - r_unlit);
 
   digitalWrite(E_LEFT_RIGHT, LOW);
+
+  // --- 2. READ FRONT SENSOR ---
+  int f_unlit = analogRead(S_FRONT);
+
+  digitalWrite(E_FRONT, HIGH);
+  delayMicroseconds(75);
+  
+  frontSensorValue = max(0, (int)analogRead(S_FRONT) - f_unlit);
+  
   digitalWrite(E_FRONT, LOW);
+  
+  delayMicroseconds(75);
 }
 
 void printSensors() {
