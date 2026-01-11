@@ -1,3 +1,9 @@
+// Gemini Sensors
+// Step 1. `initSensors();` which sets up the pins
+// The, use `updateSensors();` in core 2 or in an interrupt
+// Use the values from `leftSensorValue`, `frontSensorValue`, and `rightSensorValue`
+// Use `printSensors();` to output the values in format L F R
+
 // Emitters
 #define E_LEFT_RIGHT   22
 #define E_FRONT   21
