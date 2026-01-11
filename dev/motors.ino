@@ -1,3 +1,8 @@
+// Gemini Motors
+// Step 1. `initMotors();` which sets up the pins and enables the driver
+// The, use `setMotors(left, right);` with speeds up to 256
+// Use `stop();` to stop
+
 // Motor Pins
 #define M_RIGHT_FORWARD   5
 #define M_RIGHT_BACKWARD   4
