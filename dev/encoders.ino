@@ -6,8 +6,8 @@
 #define ENCODER_LEFT_A 8
 #define ENCODER_LEFT_B 9
 
-#define ENCODER_RIGHT_A 6
-#define ENCODER_RIGHT_B 7
+#define ENCODER_RIGHT_A 7
+#define ENCODER_RIGHT_B 6
 
 void initEncoders() {
   // Set pin mode
