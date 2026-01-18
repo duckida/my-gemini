@@ -87,6 +87,7 @@ void driveDistance(int lSpeed, int rSpeed, float mm) {
 }
 
 void driveAngle(int lSpeed, int rSpeed, float deg) {
+  // Positive for anticlockwise
   leftEncoderValue = 0;
   rightEncoderValue = 0;
   
