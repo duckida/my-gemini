@@ -45,3 +45,28 @@ void stop() {
   analogWrite(M_RIGHT_FORWARD, 0);
   analogWrite(M_RIGHT_BACKWARD, 0);
 }
+
+void driveDistance(int lSpeed, int rSpeed, float mm) {
+  leftEncoderValue = 0;
+  rightEncoderValue = 0;
+  
+  int pulses = calculatePulses(mm);
+
+  SerialBT.print("Target: ");
+  SerialBT.print(pulses);
+
+  int encoderAvg = (leftEncoderValue + rightEncoderValue) / 2;
+  setMotors(lSpeed, rSpeed);
+
+  while (encoderAvg < pulses) {
+      //float pid = PID(KP, KD, encoderDifference, 0);
+      //setMotors(lSpeed, rSpeed + pid); 
+      encoderAvg = (leftEncoderValue + rightEncoderValue) / 2;
+      // printEncoders();
+  }
+  
+  SerialBT.print("Current: ");
+  SerialBT.print(encoderAvg);
+      
+  stop();
+}
