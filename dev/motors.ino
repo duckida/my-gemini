@@ -27,15 +27,31 @@ void initMotors() {
 void setMotors(int left, int right) {
   int MAX_SPEED = 256;
 
-  left = MAX_SPEED - left;
-  right = MAX_SPEED - right;
-
-  // Set the forward speeds to max, and the reverse speed to max - target
-  analogWrite(M_LEFT_FORWARD, MAX_SPEED);
-  analogWrite(M_LEFT_BACKWARD, left);
+  int absLeft = abs(left); // No matter if positive or negative, the correct 256 - speed can be done
+  int absRight = abs(right);
   
-  analogWrite(M_RIGHT_FORWARD, MAX_SPEED);
-  analogWrite(M_RIGHT_BACKWARD, right);
+  // IF positive number, Set the forward speeds to max, and the reverse speed to max - target
+  // IF negative number, Set the backward speeds to max, and the forward speed to max - target
+
+  if (left >= 0) {
+    analogWrite(M_LEFT_FORWARD, MAX_SPEED);
+    analogWrite(M_LEFT_BACKWARD, MAX_SPEED - absLeft);
+  } 
+  else {
+    analogWrite(M_LEFT_FORWARD, MAX_SPEED - absLeft);
+    analogWrite(M_LEFT_BACKWARD, MAX_SPEED);
+  }
+
+  if (right >= 0) {
+    analogWrite(M_RIGHT_FORWARD, MAX_SPEED);
+    analogWrite(M_RIGHT_BACKWARD, MAX_SPEED - absRight);
+  } 
+  else {
+    analogWrite(M_RIGHT_FORWARD, MAX_SPEED - absRight);
+    analogWrite(M_RIGHT_BACKWARD, MAX_SPEED);
+  }
+
+  
 }
 
 void stop() {
@@ -50,23 +66,39 @@ void driveDistance(int lSpeed, int rSpeed, float mm) {
   leftEncoderValue = 0;
   rightEncoderValue = 0;
   
-  int pulses = calculatePulses(mm);
+  int pulses = abs(calculateDistancePulses(mm));
 
-  SerialBT.print("Target: ");
-  SerialBT.print(pulses);
+  int encoderAvg = (abs(leftEncoderValue) + abs(rightEncoderValue)) / 2;
 
-  int encoderAvg = (leftEncoderValue + rightEncoderValue) / 2;
-  setMotors(lSpeed, rSpeed);
+  int direction = (mm >= 0) ? 1 : -1; // 1 for forward, -1 for back
+  int moveL = lSpeed * direction;
+  int moveR = rSpeed * direction;
+  
+  setMotors(moveL, moveR);
 
   while (encoderAvg < pulses) {
-      //float pid = PID(KP, KD, encoderDifference, 0);
-      //setMotors(lSpeed, rSpeed + pid); 
-      encoderAvg = (leftEncoderValue + rightEncoderValue) / 2;
-      // printEncoders();
+    float adjustment = motorPid.calculate(encoderDifference, 0);
+    setMotors(moveL, moveR + adjustment); 
+    encoderAvg = encoderAvg = (abs(leftEncoderValue) + abs(rightEncoderValue)) / 2;
   }
+
   
-  SerialBT.print("Current: ");
-  SerialBT.print(encoderAvg);
+  stop();
+}
+
+void driveAngle(int lSpeed, int rSpeed, float deg) {
+  leftEncoderValue = 0;
+  rightEncoderValue = 0;
+  
+  int pulses = calculateAnglePulses(deg);
+  
+  int encoderDifference = rightEncoderValue - leftEncoderValue;
+  setMotors(lSpeed, rSpeed);
+
+  while (encoderDifference < pulses * 2) {
+      setMotors(-lSpeed, rSpeed); 
+      encoderDifference = rightEncoderValue - leftEncoderValue;
+  }
       
   stop();
 }
