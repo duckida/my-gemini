@@ -33,6 +33,7 @@ void leftEncoderISR_A() {
   } else {
     leftEncoderValue--;
   }
+  encoderDifference = rightEncoderValue - leftEncoderValue;
 }
 
 void leftEncoderISR_B() {
@@ -42,6 +43,7 @@ void leftEncoderISR_B() {
   } else {
     leftEncoderValue--;
   }
+  encoderDifference = rightEncoderValue - leftEncoderValue;
 }
 
 // --- RIGHT ENCODER ---
@@ -74,7 +76,7 @@ void printEncoders() {
   encoderDifference = rightEncoderValue - leftEncoderValue;
 }
 
-float calculatePulses(int mm) {
+float calculateDistancePulses(int mm) {
 /* Wheel diameter: 32mm
 Wheel circumference: = π x 32 = 100.5309649149
 Encoder pulses per full rotation of backshaft: 12
@@ -84,5 +86,26 @@ So every 600 pulses we go 100.5309mm
 Pulses per mm: 600 / 100.53096 = 5.9683106577
 */
   float pulsesPerMm = 5.9683106577;
-  return (mm * pulsesPerMm); 
+  float compensation = 0.853; // human compensation
+  return (mm * pulsesPerMm * compensation); 
+}
+
+float calculateAnglePulses(int deg) {
+  /*
+  pulsesPerMm = 5.9683106577;
+  compensation = 0.853;
+
+  Inverse of count per mm is mm per count! (5.968... * 0.853) is 0.1964...
+  Wheel separation = 74.5mm
+
+  DEG_PER_COUNT = (360.0 * MM_PER_COUNT) / (PI * WHEEL_SEPARATION);
+
+  DEG_PER_COUNT = (360.0 * 0.1964) / (3.1415926 * 74.5);
+  = 0.3020910413
+
+  COUNT_PER_DEG = 1 / DEG_PER_COUNT
+  1 / 0.3020910413 = 3.3102603629
+  */
+  float compensation = 0.95; // human compensation
+  return deg * 3.3102603629 * compensation;
 }
