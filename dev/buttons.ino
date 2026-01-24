@@ -1,5 +1,5 @@
-#define LEFT_BUTTON = 15;
-#define RIGHT_BUTTON = 14;
+#define LEFT_BUTTON = 15
+#define RIGHT_BUTTON = 14
 
 void initButtons() {
   pinMode(LEFT_BUTTON, INPUT_PULLUP);
