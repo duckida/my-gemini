@@ -86,20 +86,41 @@ void driveDistance(int lSpeed, int rSpeed, float mm) {
   stop();
 }
 
-void driveAngle(int lSpeed, int rSpeed, float deg) {
-  // Positive for anticlockwise
+
+
+// NOTE: This function is written by AI
+void driveAngle(int speed, float deg) {
+  // Use same speed magnitude for both wheels, opposite directions
   leftEncoderValue = 0;
   rightEncoderValue = 0;
-  
-  int pulses = calculateAnglePulses(deg);
-  
-  int encoderDifference = rightEncoderValue - leftEncoderValue;
-  setMotors(lSpeed, rSpeed);
 
-  while (encoderDifference < pulses * 2) {
-      setMotors(-lSpeed, rSpeed); 
-      encoderDifference = rightEncoderValue - leftEncoderValue;
+  float targetPulses = calculateAnglePulses(abs(deg)); // Always positive
+  bool turnRight = (deg < 0);
+
+  // Determine motor directions
+  int leftMotor, rightMotor;
+  if (turnRight) {
+    leftMotor = speed;   // Left forward
+    rightMotor = -speed; // Right backward
+  } else {
+    leftMotor = -speed;  // Left backward
+    rightMotor = speed;  // Right forward
   }
-      
+
+  setMotors(leftMotor, rightMotor);
+
+  // For right turn: encoderDifference = right - left becomes MORE NEGATIVE
+  // For left turn: encoderDifference becomes MORE POSITIVE
+  // So we track total rotation via sum of absolute changes or use a signed target
+
+  // Better: use total angular displacement = (left + right)/2 in terms of rotation?
+  // Simpler: use |left| + |right| since both wheels move same distance in opposite directions
+
+  long totalMoved = 0;
+  while (totalMoved < targetPulses) {
+    totalMoved = (abs(leftEncoderValue) + abs(rightEncoderValue)) / 2;
+    delay(2); // small delay to avoid busy-wait overload
+  }
+
   stop();
 }
