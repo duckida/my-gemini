@@ -1,6 +1,6 @@
-#define LEFT_LED = 20;
-#define MIDDLE_LED = 19;
-#define RIGHT_LED = 18;
+#define LEFT_LED = 20
+#define MIDDLE_LED = 19
+#define RIGHT_LED = 18
 
 void initLeds() {
   pinMode(LEFT_LED, OUTPUT);
