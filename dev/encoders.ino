@@ -3,6 +3,7 @@
 // The, use variables `leftEncoderValue` and `rightEncoderValue` to access
 // Use `printEncoders();` to output the values in format L R
 // Includes function `calculateDistance(mm)` to calculate how many pulses to travel
+// and `resetEncoders()` to set both values to 0
 
 #define ENCODER_LEFT_A 8
 #define ENCODER_LEFT_B 9
@@ -68,12 +69,10 @@ void rightEncoderISR_B() {
 // --- UTILITY FUNCTIONS ---
 
 void printEncoders() {
-  SerialBT.print(leftEncoderValue);
-  SerialBT.print(" ");
-  SerialBT.print(rightEncoderValue);
-  SerialBT.println();
-
-  encoderDifference = rightEncoderValue - leftEncoderValue;
+  Serial1.print(leftEncoderValue);
+  Serial1.print(" ");
+  Serial1.print(rightEncoderValue);
+  Serial1.println();
 }
 
 float calculateDistancePulses(int mm) {
@@ -106,6 +105,11 @@ float calculateAnglePulses(int deg) {
   COUNT_PER_DEG = 1 / DEG_PER_COUNT
   1 / 0.3020910413 = 3.3102603629
   */
-  float compensation = 0.95; // human compensation
+  float compensation = 0.94; // human compensation
   return deg * 3.3102603629 * compensation;
+}
+
+void resetEncoders() {
+  leftEncoderValue = 0;
+  rightEncoderValue = 0;
 }
