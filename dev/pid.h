@@ -4,12 +4,9 @@
 // Calculate: sensor/encoder input, desired target
 // Example: PID motorPid(Kp, Kd)
 // motorPid.calculate(encoderDifference, 0)
-
-int oldError = 0;
-
 class PID {
   private: 
-    float _oldError;
+    float _oldError = 0;
     float _KP;
     float _KD;
 
