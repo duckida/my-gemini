@@ -1,11 +1,13 @@
 #define LEFT_LED 20
 #define MIDDLE_LED 19
 #define RIGHT_LED 18
+#define MEZZ_RIGHT_LED 13
 
 void initLeds() {
   pinMode(LEFT_LED, OUTPUT);
   pinMode(MIDDLE_LED, OUTPUT);
   pinMode(RIGHT_LED, OUTPUT);
+  pinMode(MEZZ_RIGHT_LED, OUTPUT);
 }
 
 void on(int pin) {
