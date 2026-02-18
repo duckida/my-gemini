@@ -21,11 +21,15 @@ void initSensors() {
   pinMode(S_RIGHT, INPUT);
 }
 
+int f_unlit = 0;
+int r_unlit = 0;
+int l_unlit = 0;
+
 void updateSensors() {
   // --- 1. READ SIDE SENSORS ---
-  int l_unlit = analogRead(S_LEFT);
-  int r_unlit = analogRead(S_RIGHT);
-
+  l_unlit = analogRead(S_LEFT);
+  r_unlit = analogRead(S_RIGHT);
+  
   digitalWrite(E_LEFT_RIGHT, HIGH);
   delayMicroseconds(75); 
 
@@ -35,8 +39,10 @@ void updateSensors() {
 
   digitalWrite(E_LEFT_RIGHT, LOW);
 
+  delayMicroseconds(75); 
+
   // --- 2. READ FRONT SENSOR ---
-  int f_unlit = analogRead(S_FRONT);
+  f_unlit = analogRead(S_FRONT);
 
   digitalWrite(E_FRONT, HIGH);
   delayMicroseconds(75);
@@ -44,15 +50,58 @@ void updateSensors() {
   frontSensorValue = max(0, (int)analogRead(S_FRONT) - f_unlit);
   
   digitalWrite(E_FRONT, LOW);
+
+
   
-  delayMicroseconds(75);
+  // Update the rolling average lists
+  //updateLeftSensorList(leftSensorValue);
+  //updateFrontSensorList(frontSensorValue);
+  //updateRightSensorList(rightSensorValue);
+
+  //int leftSum = 0;
+  //int frontSum = 0;
+  //int rightSum = 0;
+
+  //for (int i = 0; i < 10; i++) {
+  //  leftSum = leftSum + leftSensor[i];
+  //  frontSum = frontSum + frontSensor[i];
+  //  rightSum = rightSum + rightSensor[i];
+  //}
+
+  //leftSensorValue = leftSum / 10;
+  //frontSensorValue = frontSum  / 10;
+  //rightSensorValue = rightSum / 10;
 }
 
 void printSensors() {
-  SerialBT.print(leftSensorValue);
-  SerialBT.print(" ");
-  SerialBT.print(frontSensorValue);
-  SerialBT.print(" ");
-  SerialBT.print(rightSensorValue);
-  SerialBT.println();
+  Serial1.print(leftSensorValue);
+  Serial1.print(" ");
+  Serial1.print(frontSensorValue);
+  Serial1.print(" ");
+  Serial1.print(rightSensorValue);
+  Serial1.println();
+}
+
+void updateLeftSensorList(int value) {
+  for (int i = 0; i < 9; i++) {
+    leftSensor[i] = leftSensor[i+1];
+  }
+  leftSensor[9] = value; // New value at the end
+}
+
+void updateFrontSensorList(int value) {
+  for (int i = 0; i < 9; i++) {
+      frontSensor[i] = frontSensor[i+1];
+  }
+
+  frontSensor[9] = value;
+}
+
+
+void updateRightSensorList(int value) {
+  for (int i = 0; i < 9; i++) {
+      rightSensor[i] = rightSensor[i+1];
+  }
+
+  rightSensor[9] = value;
 }
