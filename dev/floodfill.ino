@@ -35,10 +35,11 @@ Cell maze[MAZE_WIDTH][MAZE_HEIGHT]; // in order x, y
 // converts 0-360 direction to wall directions
 // 0→0, 90→1, 180→2, 270→3
 uint8_t convertDirection(int compassDirection) {
-  if (compassDirection == 0) return 0;
-  else if (compassDirection == 90) return 1;
-  else if (compassDirection == 180) return 2;
-  else if (compassDirection == 270) return 3;
+  if (compassDirection == 0) {return 0;}
+  else if (compassDirection == 90) {return 1;}
+  else if (compassDirection == 180) {return 2;}
+  else if (compassDirection == 270) {return 3;}
+  else {return 0;}
 }
 
 // check if a cell exists in the maze
