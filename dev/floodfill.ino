@@ -92,6 +92,8 @@ void updateFlood() {
   
   while (!q.empty()) { 
     Point currentExaminingCell = q.front();
+    q.pop(); // remove front element
+    
     uint8_t x = currentExaminingCell.x;
     uint8_t y = currentExaminingCell.y;
 
@@ -102,12 +104,11 @@ void updateFlood() {
         // get neighbors of the current examining cell
         uint8_t neighborWallX = x;
         uint8_t neighborWallY = y;
-        uint8_t neighborWallDir;
         
-        if (wallDirection == 0) {neighborWallY = y+1; neighborWallDir = 2;}
-        else if (wallDirection == 1) {neighborWallX = x+1; neighborWallDir = 3;}
-        else if (wallDirection == 2) {neighborWallY = y-1; neighborWallDir = 0;}
-        else if (wallDirection == 3) {neighborWallX = x-1; neighborWallDir = 1;}
+        if (wallDirection == 0) {neighborWallY = y+1;}
+        else if (wallDirection == 1) {neighborWallX = x+1;}
+        else if (wallDirection == 2) {neighborWallY = y-1;}
+        else if (wallDirection == 3) {neighborWallX = x-1;}
 
         if (cellExists(neighborWallX, neighborWallY) && maze[neighborWallX][neighborWallY].cost == 255) { // it has not already been costed
           maze[neighborWallX][neighborWallY].cost = maze[x][y].cost + 1; // set it's cost to the currentCell + 1
