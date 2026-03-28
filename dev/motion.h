@@ -5,8 +5,10 @@
 extern volatile int leftEncoderValue;
 extern volatile int rightEncoderValue;
 extern volatile int encoderDifference;
+extern volatile float heading;
 void setMotors(int left, int right);
 void stop();
+void resetHeadingVariable();
 float calculateDistancePulses(int mm);
 float calculateAnglePulses(int deg);
 
@@ -18,8 +20,8 @@ class Motion {
       // pid variables
       PID _motionPID;
 
-
       const int DRIVE_SPEED = 60;
+      const int TURN_SPEED = 60;
       
       // distance driving variables
       int _distancePulsesToGo = 0;
@@ -27,8 +29,10 @@ class Motion {
       int distanceSpeed = DRIVE_SPEED * direction;
 
       // angle driving variables
+      int _angleDegreesToGo = 0;
       int _anglePulsesToGo = 0;
       int angleSpeed = DRIVE_SPEED; // left wheel's speed when angle driving
+      volatile float compensation = 1.0; // the compensation to apply to encoder-based drive to reach 90º
       
   public:
     Motion() : _motionPID(0, 0) {
@@ -69,17 +73,18 @@ class Motion {
       interrupts();
       
       _anglePulsesToGo = calculateAnglePulses(abs(deg)); // Always positive
+      _angleDegreesToGo = abs(deg) * compensation; // Always positive
       bool turnRight = (deg < 0);
       
       // Determine motor directions
       if (turnRight) {
-        angleSpeed = DRIVE_SPEED * 1;
+        angleSpeed = TURN_SPEED * 1;
       } else {
-        angleSpeed = DRIVE_SPEED * -1;
+        angleSpeed = TURN_SPEED * -1;
       }
 
       state = 2; // set the state
-
+      resetHeadingVariable(); // reset MPU heading
       // and go!
       setMotors(angleSpeed, -angleSpeed);  
     }
@@ -95,15 +100,17 @@ class Motion {
           setMotors(distanceSpeed, distanceSpeed + adjustment); 
         }
       } else if (state == 2) { // driving angle
+        /*if (abs(heading) >= _angleDegreesToGo) {
+          stop();
+          state = 0;
+        }*/ // MPU method
+ 
         long totalMoved = (abs(leftEncoderValue) + abs(rightEncoderValue)) / 2;
         if (totalMoved >= _anglePulsesToGo) {
           stop();
+          compensation = abs(heading) / abs(_angleDegreesToGo);
           state = 0;
-        } /*else {
-          // AI AI AI Compare how far each wheel has actually travelled
-          float adjustment = _motionPID.calculate(abs(leftEncoderValue) - abs(rightEncoderValue), 0);
-          setMotors(angleSpeed + adjustment, -angleSpeed - adjustment);
-        }*/
+        } // Encoder method
       }
     }
 

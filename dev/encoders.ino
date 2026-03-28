@@ -105,7 +105,7 @@ float calculateAnglePulses(int deg) {
   COUNT_PER_DEG = 1 / DEG_PER_COUNT
   1 / 0.3020910413 = 3.3102603629
   */
-  float compensation = 0.94; // human compensation
+  float compensation = 0.94; // 0.94 human compensation
   return deg * 3.3102603629 * compensation;
 }
 

@@ -3,22 +3,41 @@ void testSensorPD(int target) {
   setMotors(60, 60 + adj);
 }
 
-void testEncoderPD(int target) {
-  float adj = motorPid.calculate(encoderDifference, 0);
-  setMotors(60, 60 + adj);
-}
 
 void testDriveDistance(int distance) {
   motion.driveDistance(distance);
-  delay(5000);
+  while(!motion.completed()) {};
+  delay(2000);
 }
 
 void testDriveAngle(int angle) {
   motion.driveAngle(angle);
   while(!motion.completed()) {};
+  delay(2000);
 }
 
 void testEncoders() {
   printEncoders();
   delay(200);
+}
+
+void testHardCodedMaze() {
+  testDriveDistance(180);
+  testDriveDistance(180);
+
+  testDriveAngle(90);
+  testDriveDistance(180);
+  testDriveAngle(90);
+  
+  testDriveDistance(180);
+  testDriveAngle(-90);
+  testDriveDistance(180);
+
+  testDriveAngle(-90);
+  testDriveDistance(180);
+  testDriveAngle(90);
+  testDriveAngle(90);
+  
+  testDriveDistance(180);
+  testDriveDistance(180);
 }

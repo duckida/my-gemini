@@ -9,4 +9,3 @@ void initButtons() {
 void waitForButton(int pin) {
   while (digitalRead(pin) == HIGH); 
 }
-

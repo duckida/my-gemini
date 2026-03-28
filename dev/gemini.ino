@@ -14,22 +14,24 @@ int frontSensor[10];
 int rightSensor[10];
 
 // Wall thresholds
-const int LEFT_GAP = 5;
+const int LEFT_GAP = 7;
 const int FRONT_WALL = 40;
-const int RIGHT_GAP = 5;
+const int RIGHT_GAP = 6;
 
 // Encoder values
 volatile int leftEncoderValue = 0;
 volatile int rightEncoderValue = 0;
 volatile int encoderDifference = 0; // right - left
 
+// MPU values
+volatile float heading = 0.0;
+
 // PD controller values
-const float SENSOR_KP = 0.2;
-const float SENSOR_KD = 0.3;
+const float SENSOR_KP = 1.0;
+const float SENSOR_KD = 0.5;
 const int TARGET = 25;
 
 PID sensorPid(SENSOR_KP, SENSOR_KD);
-PID motorPid(0.5, 0);
 
 // Timer setup
 RPI_PICO_Timer ITimer(0);
@@ -38,6 +40,7 @@ RPI_PICO_Timer ITimer(0);
 Motion motion; 
 // note: 0.9 and 0.5 are good Kp/Kd value for motion
 
+int mode; // 0 unconfigured 1 print sensors 2 test distance 3 test angle 4 wall follow 5 hardcoded
 
 // --- SETUP ---
 void setup() {
@@ -50,7 +53,8 @@ void setup() {
   initButtons();
   initLeds();
   initEncoders();
-
+  //initMpu();
+  
   delay(2000);
 
   // start timer
@@ -59,11 +63,15 @@ void setup() {
 
   // get config details
   Serial1.println("------GEMINI------");
+  Serial1.println();
 
   //int Kp = askForData("KP").toFloat();
   //int Kd = askForData("KD").toFloat();
   
   motion.setup(0.9, 0.5); // 0.9, 0.5
+
+  Serial1.println("1: print sensors, 2: test distance, 3: test angle, 4: wall follow, 5: hardcoded 6. test MPU");
+  mode = askForData("Select mode:").toInt();
 }
 
 // -- TIMER RUNNER --
@@ -74,16 +82,40 @@ bool TimerHandler(struct repeating_timer *t)
 }
 
 void loop() {
-  //printSensors();
-  wallFollow();
-  //testDriveAngle(-90);
-  //delay(200);
+  //updateMpu();
+  switch(mode) {
+    case 1:
+      printSensors();
+      delay(200);
+      break;
+    case 2:
+      testDriveDistance(1000);
+      break;
+    case 3:
+      testDriveAngle(-90);
+      printMpu();
+      break;
+    case 4:
+      wallFollow();
+      break;
+    case 5:
+      testHardCodedMaze();
+      break;
+    case 6:
+      printMpu();
+      delay(200);
+      break;
+  }
 };
 
+// -- SECOND CORE (USED FOR SENSORS & MPU) --
 void setup1() {
   initSensors();
+  initMpu();
+  resetHeading();
 }
 
 void loop1() {
   updateSensors();
+  updateMpu();
 };
