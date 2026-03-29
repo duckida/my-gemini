@@ -40,6 +40,13 @@ RPI_PICO_Timer ITimer(0);
 Motion motion; 
 // note: 0.9 and 0.5 are good Kp/Kd value for motion
 
+
+// Positioning variables
+int robotX = 0;
+int robotY = 0;
+int robotDir = 0;
+
+
 int mode; // 0 unconfigured 1 print sensors 2 test distance 3 test angle 4 wall follow 5 hardcoded
 
 // --- SETUP ---
@@ -62,7 +69,7 @@ void setup() {
   ITimer.attachInterrupt(frequency, TimerHandler);
 
   // get config details
-  Serial1.println("------GEMINI------");
+  Serial1.println("------GEMINI 2026.3.1------");
   Serial1.println();
 
   //int Kp = askForData("KP").toFloat();
@@ -90,13 +97,15 @@ void loop() {
       break;
     case 2:
       testDriveDistance(1000);
+      Serial1.println(robotY);
       break;
     case 3:
       testDriveAngle(-90);
-      printMpu();
+      // printMpu();
       break;
     case 4:
       wallFollow();
+      printPosition();
       break;
     case 5:
       testHardCodedMaze();

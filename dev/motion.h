@@ -2,12 +2,17 @@
 // Creates a class `Motion()` that exposes functions `driveDistance(mm)` and `driveAngle(deg)`
 // You must call `update()` in a loop/ISR
 
+// telling the program these exist
 extern volatile int leftEncoderValue;
 extern volatile int rightEncoderValue;
 extern volatile int encoderDifference;
 extern volatile float heading;
 void setMotors(int left, int right);
 void stop();
+void updateDirection(int turnDir);
+float pulsesToDistance(int pulses);
+void updatePosition();
+void updatePositionBack();
 void resetHeadingVariable();
 float calculateDistancePulses(int mm);
 float calculateAnglePulses(int deg);
@@ -27,6 +32,7 @@ class Motion {
       int _distancePulsesToGo = 0;
       int direction = 1;
       int distanceSpeed = DRIVE_SPEED * direction;
+      int lastCheckpoint = 0;
 
       // angle driving variables
       int _angleDegreesToGo = 0;
@@ -56,7 +62,8 @@ class Motion {
       // calculate which way to go
       direction = (distance >= 0) ? 1 : -1; // check if distance is positive - 1 for forward, -1 for back
       distanceSpeed = DRIVE_SPEED * direction;
-      
+
+      lastCheckpoint = 0; // reset the checkpoint
       state = 1; // set the state
 
       // and go!
@@ -65,6 +72,7 @@ class Motion {
     }
 
     // NOTE: This function is written by AI
+    // -90 is left 90
     void driveAngle(int deg) {
       // reset encoders
       noInterrupts();
@@ -74,7 +82,7 @@ class Motion {
       
       _anglePulsesToGo = calculateAnglePulses(abs(deg)); // Always positive
       _angleDegreesToGo = abs(deg) * compensation; // Always positive
-      bool turnRight = (deg < 0);
+      bool turnRight = (deg > 0);
       
       // Determine motor directions
       if (turnRight) {
@@ -82,7 +90,8 @@ class Motion {
       } else {
         angleSpeed = TURN_SPEED * -1;
       }
-
+      
+      updateDirection(deg); // update positioning direction
       state = 2; // set the state
       resetHeadingVariable(); // reset MPU heading
       // and go!
@@ -92,12 +101,23 @@ class Motion {
     void update() {
       if (state == 1) { // driving distance
         int encoderAvg = abs(leftEncoderValue + rightEncoderValue) / 2; // use ABS to ensure the number is always positive
-        if (encoderAvg >= _distancePulsesToGo) {
+        if (encoderAvg >= _distancePulsesToGo) { // moved enough
           stop();
           state = 0;
         } else {
           float adjustment = _motionPID.calculate(encoderDifference, 0);
           setMotors(distanceSpeed, distanceSpeed + adjustment); 
+
+          int distanceTravelled = (int)pulsesToDistance(encoderAvg);
+          if ((pulsesToDistance(encoderAvg) > 0) && (distanceTravelled >= lastCheckpoint + 180)) { // moved more than 180
+            if (direction == 1) { // moving forward
+              lastCheckpoint = distanceTravelled;
+              updatePosition();
+            } else {
+              lastCheckpoint = distanceTravelled;
+              updatePositionBack();
+            }
+          }
         }
       } else if (state == 2) { // driving angle
         /*if (abs(heading) >= _angleDegreesToGo) {

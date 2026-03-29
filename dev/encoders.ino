@@ -2,7 +2,9 @@
 // Step 1. `initEncoders();` which sets up the pins and attaches interrupts
 // The, use variables `leftEncoderValue` and `rightEncoderValue` to access
 // Use `printEncoders();` to output the values in format L R
-// Includes function `calculateDistance(mm)` to calculate how many pulses to travel
+// Includes function `calculateDistancePulses(mm)` to calculate how many pulses to travel
+// and `calculateAnglePulses(deg)` for angle
+// and `pulsesToDistance(pulses)` to reverse this
 // and `resetEncoders()` to set both values to 0
 
 #define ENCODER_LEFT_A 8
@@ -75,6 +77,9 @@ void printEncoders() {
   Serial1.println();
 }
 
+const float PULSES_PER_MM = 5.9683106577;
+const float MM_PER_PULSE = 1.0 / PULSES_PER_MM;
+
 float calculateDistancePulses(int mm) {
 /* Wheel diameter: 32mm
 Wheel circumference: = π x 32 = 100.5309649149
@@ -84,9 +89,12 @@ Encoder pulses per full rotation of wheel: 12 * 50 = 600
 So every 600 pulses we go 100.5309mm
 Pulses per mm: 600 / 100.53096 = 5.9683106577
 */
-  float pulsesPerMm = 5.9683106577;
   float compensation = 0.853; // human compensation
-  return (mm * pulsesPerMm * compensation); 
+  return (mm * PULSES_PER_MM * compensation); 
+}
+
+float pulsesToDistance(int pulses) {
+  return (pulses * MM_PER_PULSE); 
 }
 
 float calculateAnglePulses(int deg) {
