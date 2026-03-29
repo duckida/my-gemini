@@ -1,11 +1,12 @@
 // Gemini positioning module
-// `updateDirection()` allows the direction to be normalized & set
+// `normalizeDirection()` allows the direction to be normalized
+// `updateDirection()` allows the direction to be normalized & set as `robotDir`
 // `updatePosition()` moves the robot forward 1 square, respecting direction
 // `updatePositionBack()` does the same but moves it back 1 square
 // `printPosition` prints the x, y, and direction to Serial1
 
 // normalizes turn direction to 0-360º
-void updateDirection(int turnDir) {
+int normalizeDirection(int turnDir) {
   int newDirection = robotDir + turnDir;
 
   newDirection = newDirection % 360;
@@ -13,8 +14,13 @@ void updateDirection(int turnDir) {
   if (newDirection < 0) {
     newDirection = 360 + newDirection;
   }
+  
+  return newDirection;
+}
 
-  robotDir = newDirection;
+// sets the normalized direction
+void updateDirection(int turnDir) {
+   robotDir = normalizeDirection(turnDir);
 }
 
 // Move forward by 1, respecting direction
@@ -55,9 +61,9 @@ void updatePositionBack() {
 void printPosition() {
   Serial1.print("X: ");
   Serial1.print(robotX);
-  Serial1.print("Y: ");
+  Serial1.print(" Y: ");
   Serial1.print(robotY);
-  Serial1.print("D: ");
+  Serial1.print(" D: ");
   Serial1.print(robotDir);
   Serial1.println();
 }

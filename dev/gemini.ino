@@ -47,7 +47,7 @@ int robotY = 0;
 int robotDir = 0;
 
 
-int mode; // 0 unconfigured 1 print sensors 2 test distance 3 test angle 4 wall follow 5 hardcoded
+int mode; // 0 unconfigured 1 print sensors 2 test distance 3 test angle 4 wall follow 5 hardcoded 6 test MPU 7 solve maze
 
 // --- SETUP ---
 void setup() {
@@ -77,7 +77,7 @@ void setup() {
   
   motion.setup(0.9, 0.5); // 0.9, 0.5
 
-  Serial1.println("1: print sensors, 2: test distance, 3: test angle, 4: wall follow, 5: hardcoded 6. test MPU");
+  Serial1.println("1: print sensors, 2: test distance, 3: test angle, 4: wall follow, 5: hardcoded, 6: test MPU, 7: solve maze");
   mode = askForData("Select mode:").toInt();
 }
 
@@ -113,6 +113,10 @@ void loop() {
     case 6:
       printMpu();
       delay(200);
+      break;
+    case 7:
+      mazeLoop();
+      printPosition();
       break;
   }
 };

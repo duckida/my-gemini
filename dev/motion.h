@@ -108,7 +108,7 @@ class Motion {
           float adjustment = _motionPID.calculate(encoderDifference, 0);
           setMotors(distanceSpeed, distanceSpeed + adjustment); 
 
-          int distanceTravelled = (int)pulsesToDistance(encoderAvg);
+          /*int distanceTravelled = (int)pulsesToDistance(encoderAvg);
           if ((pulsesToDistance(encoderAvg) > 0) && (distanceTravelled >= lastCheckpoint + 180)) { // moved more than 180
             if (direction == 1) { // moving forward
               lastCheckpoint = distanceTravelled;
@@ -117,7 +117,7 @@ class Motion {
               lastCheckpoint = distanceTravelled;
               updatePositionBack();
             }
-          }
+          }*/ // this is the loop that updates position
         }
       } else if (state == 2) { // driving angle
         /*if (abs(heading) >= _angleDegreesToGo) {
