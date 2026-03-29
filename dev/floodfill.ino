@@ -197,4 +197,6 @@ void mazeLoop() {
   motion.driveDistance(180);
   while (!motion.completed()) {}
   updatePosition();
+  
+  sendMazeState();
 }

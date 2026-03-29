@@ -14,9 +14,9 @@ int frontSensor[10];
 int rightSensor[10];
 
 // Wall thresholds
-const int LEFT_GAP = 7;
+const int LEFT_GAP = 5;
 const int FRONT_WALL = 40;
-const int RIGHT_GAP = 6;
+const int RIGHT_GAP = 5;
 
 // Encoder values
 volatile int leftEncoderValue = 0;
