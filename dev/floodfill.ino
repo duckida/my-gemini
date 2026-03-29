@@ -145,15 +145,15 @@ void mazeLoop() {
   }
 
   if (leftSensorValue > LEFT_GAP) { // there's a wall on the left 
-    setWall(robotX, robotY, normalizeDirection(robotDir - 90)); 
+    setWall(robotX, robotY, normalizeDirection(-90)); 
   }
 
   if (rightSensorValue > RIGHT_GAP) { // there's a wall on the right 
-    setWall(robotX, robotY, normalizeDirection(robotDir + 90)); 
+    setWall(robotX, robotY, normalizeDirection(90)); 
   }
 
   if (frontSensorValue >= FRONT_WALL) { // wall in front
-    setWall(robotX, robotY, normalizeDirection(robotDir)); 
+    setWall(robotX, robotY, normalizeDirection(0)); 
   }
 
   updateFlood();
@@ -180,6 +180,11 @@ void mazeLoop() {
         lowestCostDirection = neighborDir;
       }
     }
+  }
+
+  if (lowestCostCell.cost == maze[robotX][robotY].cost) { // same cost as current
+    stop(); // no valid move found
+    return;
   }
 
   // turn until facing the direction of the lowest cost cell (this part is written by AI)
