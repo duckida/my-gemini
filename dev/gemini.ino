@@ -14,9 +14,9 @@ int frontSensor[10];
 int rightSensor[10];
 
 // Wall thresholds
-const int LEFT_GAP = 5;
+const int LEFT_GAP = 8;
 const int FRONT_WALL = 40;
-const int RIGHT_GAP = 5;
+const int RIGHT_GAP = 11;
 
 // Encoder values
 volatile int leftEncoderValue = 0;
@@ -77,8 +77,13 @@ void setup() {
   
   motion.setup(0.9, 0.5); // 0.9, 0.5
 
-  Serial1.println("1: print sensors, 2: test distance, 3: test angle, 4: wall follow, 5: hardcoded, 6: test MPU, 7: solve maze");
+  Serial1.println("1: print sensors, 2: test distance, 3: test angle, 4: wall follow, 5: hardcoded, 6: test MPU, 7: solve maze, 8: print encoders");
   mode = askForData("Select mode:").toInt();
+  
+  if (mode == 7) { // if solving
+    setWall(0,0,90); // set the left and write walls as present
+    setWall(0,0,270);
+  }
 }
 
 // -- TIMER RUNNER --
@@ -117,6 +122,10 @@ void loop() {
     case 7:
       mazeLoop();
       printPosition();
+      break;
+    case 8:
+      printEncoders();
+      delay(100);
       break;
   }
 };

@@ -120,6 +120,29 @@ void updateFlood() {
   }
 }
 
+void checkAndUpdateSideWalls() {
+  printSensors();
+  
+  if (leftSensorValue > LEFT_GAP) { // there's a wall on the left 
+    Serial1.println("WALL ON LEFT");
+    setWall(robotX, robotY, normalizeDirection(-90)); 
+  }
+
+  if (rightSensorValue > RIGHT_GAP) { // there's a wall on the right 
+    Serial1.println("WALL ON RIGHT");
+    setWall(robotX, robotY, normalizeDirection(90)); 
+  }
+  sendWallState(); // sends to mousefriend app
+}
+
+void checkAndUpdateFrontWall() {
+  if (frontSensorValue >= FRONT_WALL) { // wall in front
+    Serial1.println("WALL ON FRONT");
+    setWall(robotX, robotY, robotDir); 
+  }
+  sendWallState(); // sends to mousefriend app
+}
+
 // --- MAZE SOLVING LOOP ---
 void mazeLoop() {
   /*
@@ -136,27 +159,21 @@ void mazeLoop() {
 [x] Drive forward
 [x] Update position 
 
+[] From middle, read front wall and reflood
+[] Decide which cell to go (flood which needs wall readings)
+[] Go to sensing point
+[] 
 
    */
-
   if (robotX == targetX && robotY == targetY) {
     stop();
     return;
   }
 
-  if (leftSensorValue > LEFT_GAP) { // there's a wall on the left 
-    setWall(robotX, robotY, normalizeDirection(-90)); 
-  }
-
-  if (rightSensorValue > RIGHT_GAP) { // there's a wall on the right 
-    setWall(robotX, robotY, normalizeDirection(90)); 
-  }
-
-  if (frontSensorValue >= FRONT_WALL) { // wall in front
-    setWall(robotX, robotY, normalizeDirection(0)); 
-  }
-
+  checkAndUpdateFrontWall(); 
+  
   updateFlood();
+  sendMazeState();
 
   Cell lowestCostCell = maze[robotX][robotY]; // init with the current cell's cost
   int lowestCostDirection = 0; // the cell with lowest cost's absolute direction
@@ -193,10 +210,19 @@ void mazeLoop() {
   motion.driveAngle(relative);
   while (!motion.completed()) {}
 
-  // drive to the next cell
-  motion.driveDistance(180);
+  // drive to the next cell's sensing point
+  motion.driveDistance(30);
+  while (!motion.completed()) {}
+  checkAndUpdateSideWalls();
+  delay(100);
+  
+  motion.driveDistance(150); // go to the middle of next cell
+  checkAndUpdateFrontWall();
+  delay(100);
+  
   while (!motion.completed()) {}
   updatePosition();
+  delay(100);
   
   sendMazeState();
 }
