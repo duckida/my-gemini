@@ -207,22 +207,31 @@ void mazeLoop() {
   // turn until facing the direction of the lowest cost cell (this part is written by AI)
   int relative = (lowestCostDirection - robotDir + 360) % 360;
   if (relative > 180) relative -= 360;
-  motion.driveAngle(relative);
+  delay(100);
+
+  if (relative == 180) { // turn in 90º intervals
+    motion.driveAngle(90);
+    while (!motion.completed()) {}
+    delay(100);
+    motion.driveAngle(90);
+  } else {
+    motion.driveAngle(relative);
+  } 
+
   while (!motion.completed()) {}
+  delay(100);
 
   // drive to the next cell's sensing point
   motion.driveDistance(30);
   while (!motion.completed()) {}
+  //delay(100);
+
+  updatePosition();
   checkAndUpdateSideWalls();
-  delay(100);
   
   motion.driveDistance(150); // go to the middle of next cell
-  checkAndUpdateFrontWall();
-  delay(100);
-  
   while (!motion.completed()) {}
-  updatePosition();
-  delay(100);
+ 
   
   sendMazeState();
 }
