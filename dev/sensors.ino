@@ -82,6 +82,7 @@ void printSensors() {
   Serial1.println();
 }
 
+/*
 void updateLeftSensorList(int value) {
   for (int i = 0; i < 9; i++) {
     leftSensor[i] = leftSensor[i+1];
@@ -104,4 +105,4 @@ void updateRightSensorList(int value) {
   }
 
   rightSensor[9] = value;
-}
+}*/

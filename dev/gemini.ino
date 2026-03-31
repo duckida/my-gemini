@@ -9,14 +9,14 @@ volatile int leftSensorValue = 0;
 volatile int frontSensorValue = 0;
 volatile int rightSensorValue = 0;
 
-int leftSensor[10];
-int frontSensor[10];
-int rightSensor[10];
+//int leftSensor[10];
+//int frontSensor[10];
+//int rightSensor[10];
 
 // Wall thresholds
 const int LEFT_GAP = 11;
 const int FRONT_WALL = 40;
-const int RIGHT_GAP = 11;
+const int RIGHT_GAP = 12;
 
 // Encoder values
 volatile int leftEncoderValue = 0;
@@ -83,6 +83,9 @@ void setup() {
   if (mode == 7) { // if solving
     setWall(0,0,90); // set the left and write walls as present
     setWall(0,0,270);
+    
+    motion.driveDistance(52); // start flush to the wall, go to the center
+    while (!motion.completed()) {}
   }
 }
 

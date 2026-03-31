@@ -24,11 +24,14 @@ struct Cell {
 
 // defining the maze
 // 16x16 also works!
-const int MAZE_WIDTH = 3;
-const int MAZE_HEIGHT = 3;
+const uint8_t MAZE_WIDTH = 3;
+const uint8_t MAZE_HEIGHT = 3;
 
-const uint8_t targetX = 2;
-const uint8_t targetY = 2;
+const uint8_t GOAL_X = 2;
+const uint8_t GOAL_Y = 2;
+
+uint8_t targetX = GOAL_X;
+uint8_t targetY = GOAL_Y;
 
 Cell maze[MAZE_WIDTH][MAZE_HEIGHT]; // in order x, y
 
@@ -151,6 +154,8 @@ void checkAndUpdateFrontWall() {
 }
 
 // --- MAZE SOLVING LOOP ---
+// to return it just sets target to 0,0
+
 void mazeLoop() {
   /*
 [x] Check walls 
@@ -174,6 +179,23 @@ void mazeLoop() {
    */
   if (robotX == targetX && robotY == targetY) {
     stop();
+    delay(500);
+    
+    switch(mazeState) {
+      case DISCOVERING: // we've just finished discovering
+        targetX = 0;
+        targetY = 0;
+        mazeState = RETURNING;
+        break; 
+      case RETURNING: // we've just returned to (0,0)
+        targetX = GOAL_X;
+        targetY = GOAL_Y;
+        mazeState = DISCOVERING;
+        //updateFlood();
+        //mazeState = FAST; // time to go FAST!
+        break;
+    }
+
     return;
   }
 
