@@ -23,6 +23,7 @@ struct Cell {
 
 
 // defining the maze
+// 16x16 also works!
 const int MAZE_WIDTH = 3;
 const int MAZE_HEIGHT = 3;
 
@@ -30,6 +31,12 @@ const uint8_t targetX = 2;
 const uint8_t targetY = 2;
 
 Cell maze[MAZE_WIDTH][MAZE_HEIGHT]; // in order x, y
+
+// maze state
+#define DISCOVERING 0
+#define RETURNING 1
+#define FAST 2
+int mazeState = 0;
 
 // --- FUNCTIONS ---
 
@@ -207,19 +214,38 @@ void mazeLoop() {
   // turn until facing the direction of the lowest cost cell (this part is written by AI)
   int relative = (lowestCostDirection - robotDir + 360) % 360;
   if (relative > 180) relative -= 360;
-  delay(100);
 
   if (relative == 180) { // turn in 90º intervals
+    delay(100);
+    
+    // turn the first 90º
     motion.driveAngle(90);
     while (!motion.completed()) {}
-    delay(100);
-    motion.driveAngle(90);
-  } else {
-    motion.driveAngle(relative);
-  } 
+    delay(100);  
 
-  while (!motion.completed()) {}
-  delay(100);
+    // turn the next 90º
+    motion.driveAngle(90);
+    while (!motion.completed()) {}
+    delay(100);  
+
+    // ram into the wall
+    motion.driveDistance(-80);
+    while (!motion.completed()) {}
+    delay(50);
+
+    // come back to the center
+    motion.driveDistance(40);
+    while (!motion.completed()) {}
+    delay(300); 
+
+    
+  } else if (relative != 0) {
+    delay(100);
+    
+    motion.driveAngle(relative);
+    while (!motion.completed()) {}
+    delay(100);
+  } 
 
   // drive to the next cell's sensing point
   motion.driveDistance(30);
