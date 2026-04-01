@@ -24,8 +24,8 @@ struct Cell {
 
 // defining the maze
 // 16x16 also works!
-const uint8_t MAZE_WIDTH = 16;
-const uint8_t MAZE_HEIGHT = 16;
+const uint8_t MAZE_WIDTH = 3;
+const uint8_t MAZE_HEIGHT = 6;
 
 const uint8_t GOAL_X = 2;
 const uint8_t GOAL_Y = 5;
@@ -251,14 +251,14 @@ void mazeLoop() {
     delay(100);  
 
     // ram into the wall
-    motion.driveDistance(-80);
+    motion.driveDistance(-100);
     while (!motion.completed()) {}
-    delay(50);
+    delay(100);
 
     // come back to the center
-    motion.driveDistance(40);
+    motion.driveDistance(50); // lkg 40
     while (!motion.completed()) {}
-    delay(300); 
+    delay(100); 
 
     
   } else if (relative != 0) {

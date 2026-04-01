@@ -14,9 +14,9 @@ volatile int rightSensorValue = 0;
 //int rightSensor[10];
 
 // Wall thresholds
-const int LEFT_GAP = 12;
+const int LEFT_GAP = 10;
 const int FRONT_WALL = 40;
-const int RIGHT_GAP = 12;
+const int RIGHT_GAP = 10;
 
 // Encoder values
 volatile int leftEncoderValue = 0;
