@@ -14,9 +14,9 @@ volatile int rightSensorValue = 0;
 //int rightSensor[10];
 
 // Wall thresholds
-const int LEFT_GAP = 10;
+const int LEFT_GAP = 9;
 const int FRONT_WALL = 40;
-const int RIGHT_GAP = 10;
+const int RIGHT_GAP = 9;
 
 // Encoder values
 volatile int leftEncoderValue = 0;
@@ -84,7 +84,8 @@ void setup() {
     setWall(0,0,90); // set the left and write walls as present
     setWall(0,0,270);
     
-    motion.driveDistance(52); // start flush to the wall, go to the center
+    //motion.driveDistance(52); // start flush to the wall, go to the center
+    motion.driveCell(27);
     while (!motion.completed()) {}
   }
 }

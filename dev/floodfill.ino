@@ -24,10 +24,10 @@ struct Cell {
 
 // defining the maze
 // 16x16 also works!
-const uint8_t MAZE_WIDTH = 6;
+const uint8_t MAZE_WIDTH = 3;
 const uint8_t MAZE_HEIGHT = 6;
 
-const uint8_t GOAL_X = 5;
+const uint8_t GOAL_X = 2;
 const uint8_t GOAL_Y = 5;
 
 uint8_t targetX = GOAL_X;
@@ -252,11 +252,13 @@ void mazeLoop() {
 
     // ram into the wall
     motion.driveDistance(-100);
+    motion.driveCell(-50);
     while (!motion.completed()) {}
     delay(100);
 
     // come back to the center
-    motion.driveDistance(48); // lkg 40
+    //motion.driveDistance(48);// lkg 40
+    motion.driveCell(27);
     while (!motion.completed()) {}
     delay(300); 
 
@@ -270,14 +272,16 @@ void mazeLoop() {
   } 
 
   // drive to the next cell's sensing point
-  motion.driveDistance(30);
+  //motion.driveDistance(30);
+  motion.driveCell(17);
   while (!motion.completed()) {}
   //delay(100);
 
   updatePosition();
   checkAndUpdateSideWalls();
   
-  motion.driveDistance(150); // go to the middle of next cell
+  //motion.driveDistance(150); // go to the middle of next cell
+  motion.driveCell(83);
   while (!motion.completed()) {}
  
   
