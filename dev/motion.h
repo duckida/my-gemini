@@ -15,17 +15,18 @@ void updatePosition();
 void updatePositionBack();
 void resetHeadingVariable();
 float calculateDistancePulses(int mm);
+float calculateCellPulses(int cellPercentage);
 float calculateAnglePulses(int deg);
 
 class Motion {
   private:
-      // state: 0=idle 1=driveDistance 2=driveAngle
+      // state: 0=idle 1=driveDistance 2=driveAngle 3=driveCell
       volatile int state = 0;
       
       // pid variables
       PID _motionPID;
 
-      const int DRIVE_SPEED = 60;
+      const int DRIVE_SPEED = 40;
       const int TURN_SPEED = 60;
       
       // distance driving variables
@@ -33,6 +34,11 @@ class Motion {
       int direction = 1;
       int distanceSpeed = DRIVE_SPEED * direction;
       int lastCheckpoint = 0;
+
+      // cell driving variables
+      int _cellPulsesToGo = 0;
+      int cellDirection = 1;
+      int cellSpeed = DRIVE_SPEED * cellDirection;
 
       // angle driving variables
       int _angleDegreesToGo = 0;
@@ -44,6 +50,7 @@ class Motion {
     Motion() : _motionPID(0, 0) {
        _distancePulsesToGo = 0;
        _anglePulsesToGo = 0;
+       _cellPulsesToGo = 0;
     }
 
     void setup(float Kp, float Kd) {
@@ -69,6 +76,25 @@ class Motion {
       // and go!
       _distancePulsesToGo = abs(calculateDistancePulses(distance)); // use ABS to ensure the number is always positive
       setMotors(distanceSpeed, distanceSpeed); // start the motors
+    }
+
+    
+    void driveCell(int cellPercentage) { // 100 is 1 cell etc.
+      // reset encoders
+      noInterrupts();
+      leftEncoderValue = 0;
+      rightEncoderValue = 0;
+      interrupts();
+
+      // calculate which way to go
+      cellDirection = (cellPercentage >= 0) ? 1 : -1; // check if distance is positive - 1 for forward, -1 for back
+      cellSpeed = DRIVE_SPEED * cellDirection;
+
+      state = 3; // set the state
+
+      // and go!
+      _cellPulsesToGo = abs(calculateCellPulses(cellPercentage)); // use ABS to ensure the number is always positive
+      setMotors(cellSpeed, cellSpeed); // start the motors
     }
 
     // NOTE: This function is written by AI
@@ -100,11 +126,12 @@ class Motion {
       
     void update() {
       if (state == 1) { // driving distance
-        int encoderAvg = abs(leftEncoderValue + rightEncoderValue) / 2; // use ABS to ensure the number is always positive
+        int encoderAvg = (abs(leftEncoderValue) + abs(rightEncoderValue)) / 2; // use ABS to ensure the number is always positive
         if (encoderAvg >= _distancePulsesToGo) { // moved enough
           stop();
           state = 0;
-        } else {
+        } 
+        else {
           float adjustment = _motionPID.calculate(encoderDifference, 0);
           setMotors(distanceSpeed, distanceSpeed + adjustment); 
 
@@ -119,7 +146,8 @@ class Motion {
             }
           }*/ // this is the loop that updates position
         }
-      } else if (state == 2) { // driving angle
+      } 
+      else if (state == 2) { // driving angle
         /*if (abs(heading) >= _angleDegreesToGo) {
           stop();
           state = 0;
@@ -132,6 +160,19 @@ class Motion {
           state = 0;
         } // Encoder method
       }
+
+      else if (state == 3) { // driving cells
+        int encoderAvg = (abs(leftEncoderValue) + abs(rightEncoderValue)) / 2; // use ABS to ensure the number is always positive
+        if (encoderAvg >= _cellPulsesToGo) { // moved enough
+          stop();
+          state = 0;
+        } 
+        else {
+          float adjustment = _motionPID.calculate(encoderDifference, 0);
+          setMotors(cellSpeed, cellSpeed + adjustment); 
+        }
+      }
+      
     }
 
     bool completed() {

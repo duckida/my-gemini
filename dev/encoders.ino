@@ -89,7 +89,7 @@ Encoder pulses per full rotation of wheel: 12 * 50 = 600
 So every 600 pulses we go 100.5309mm
 Pulses per mm: 600 / 100.53096 = 5.9683106577
 */
-  float compensation = 0.853; // human compensation
+  float compensation = 0.9; //0.853; // human compensation
   return (mm * PULSES_PER_MM * compensation); 
 }
 
@@ -115,6 +115,12 @@ float calculateAnglePulses(int deg) {
   */
   float compensation = 0.94; // 0.94 human compensation
   return deg * 3.3102603629 * compensation;
+}
+
+float calculateCellPulses(int cellPercentage) {
+  float pulsesPerCell = 1033.2;
+
+  return (pulsesPerCell / 100.0) * cellPercentage;
 }
 
 void resetEncoders() {

@@ -10,6 +10,13 @@ void testDriveDistance(int distance) {
   delay(2000);
 }
 
+
+void testDriveCell(int cellPercentage) {
+  motion.driveCell(cellPercentage);
+  while(!motion.completed()) {};
+  delay(2000);
+}
+
 void testDriveAngle(int angle) {
   motion.driveAngle(angle);
   while(!motion.completed()) {};

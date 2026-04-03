@@ -24,10 +24,10 @@ struct Cell {
 
 // defining the maze
 // 16x16 also works!
-const uint8_t MAZE_WIDTH = 3;
+const uint8_t MAZE_WIDTH = 6;
 const uint8_t MAZE_HEIGHT = 6;
 
-const uint8_t GOAL_X = 2;
+const uint8_t GOAL_X = 5;
 const uint8_t GOAL_Y = 5;
 
 uint8_t targetX = GOAL_X;
@@ -179,7 +179,7 @@ void mazeLoop() {
    */
   if (robotX == targetX && robotY == targetY) {
     stop();
-    delay(500);
+    delay(5000);
     
     switch(mazeState) {
       case DISCOVERING: // we've just finished discovering
@@ -256,9 +256,9 @@ void mazeLoop() {
     delay(100);
 
     // come back to the center
-    motion.driveDistance(50); // lkg 40
+    motion.driveDistance(48); // lkg 40
     while (!motion.completed()) {}
-    delay(100); 
+    delay(300); 
 
     
   } else if (relative != 0) {

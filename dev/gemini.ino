@@ -130,6 +130,9 @@ void loop() {
       printEncoders();
       delay(100);
       break;
+    case 9:
+      testDriveCell(100);
+      break;
   }
 };
 
