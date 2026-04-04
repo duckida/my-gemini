@@ -5,8 +5,14 @@
 // telling the program these exist
 extern volatile int leftEncoderValue;
 extern volatile int rightEncoderValue;
+
+extern volatile int leftSensorValue;
+extern volatile int rightSensorValue;
+
 extern volatile int encoderDifference;
+
 extern volatile float heading;
+
 void setMotors(int left, int right);
 void stop();
 void updateDirection(int turnDir);
@@ -17,6 +23,14 @@ void resetHeadingVariable();
 float calculateDistancePulses(int mm);
 float calculateCellPulses(int cellPercentage);
 float calculateAnglePulses(int deg);
+extern const float SENSOR_KP;
+extern const float SENSOR_KD;
+extern const int TARGET;
+// end externs
+
+#define DRIVE_PID_NONE 0
+#define DRIVE_PID_LEFT 1
+#define DRIVE_PID_RIGHT 2
 
 class Motion {
   private:
@@ -25,8 +39,9 @@ class Motion {
       
       // pid variables
       PID _motionPID;
+      PID _sensorPID;
 
-      const int DRIVE_SPEED = 40;
+      const int DRIVE_SPEED = 50;
       const int TURN_SPEED = 60;
       
       // distance driving variables
@@ -39,6 +54,7 @@ class Motion {
       int _cellPulsesToGo = 0;
       int cellDirection = 1;
       int cellSpeed = DRIVE_SPEED * cellDirection;
+      uint8_t sensorPidSetting = DRIVE_PID_NONE;
 
       // angle driving variables
       int _angleDegreesToGo = 0;
@@ -47,7 +63,7 @@ class Motion {
       volatile float compensation = 1.0; // the compensation to apply to encoder-based drive to reach 90º
       
   public:
-    Motion() : _motionPID(0, 0) {
+    Motion() : _motionPID(0, 0), _sensorPID(0, 0) {
        _distancePulsesToGo = 0;
        _anglePulsesToGo = 0;
        _cellPulsesToGo = 0;
@@ -55,6 +71,7 @@ class Motion {
 
     void setup(float Kp, float Kd) {
       _motionPID = PID(Kp, Kd);
+      _sensorPID = PID(SENSOR_KP, SENSOR_KD);
     }
 
     // Distance driving
@@ -79,7 +96,9 @@ class Motion {
     }
 
     
-    void driveCell(int cellPercentage) { // 100 is 1 cell etc.
+    void driveCell(int cellPercentage, uint8_t useSensors) { // 100 is 1 cell etc.
+      sensorPidSetting = useSensors;
+      
       // reset encoders
       noInterrupts();
       leftEncoderValue = 0;
@@ -96,6 +115,7 @@ class Motion {
       _cellPulsesToGo = abs(calculateCellPulses(cellPercentage)); // use ABS to ensure the number is always positive
       setMotors(cellSpeed, cellSpeed); // start the motors
     }
+
 
     // NOTE: This function is written by AI
     // -90 is left 90
@@ -167,8 +187,18 @@ class Motion {
           stop();
           state = 0;
         } 
+
         else {
-          float adjustment = _motionPID.calculate(encoderDifference, 0);
+          float adjustment = 0;
+          if (sensorPidSetting == DRIVE_PID_LEFT) {
+             adjustment = _sensorPID.calculate(leftSensorValue, TARGET);
+          } 
+          else if (sensorPidSetting == DRIVE_PID_RIGHT) {
+            adjustment = (-1 * _sensorPID.calculate(rightSensorValue, TARGET));
+          }
+          else {
+             adjustment = _motionPID.calculate(encoderDifference, 0);
+          }
           setMotors(cellSpeed, cellSpeed + adjustment); 
         }
       }

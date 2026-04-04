@@ -15,7 +15,7 @@ volatile int rightSensorValue = 0;
 
 // Wall thresholds
 const int LEFT_GAP = 9;
-const int FRONT_WALL = 40;
+const int FRONT_WALL = 30;
 const int RIGHT_GAP = 9;
 
 // Encoder values
@@ -29,7 +29,7 @@ volatile float heading = 0.0;
 // PD controller values
 const float SENSOR_KP = 1.0;
 const float SENSOR_KD = 0.5;
-const int TARGET = 25;
+const int TARGET = 19;
 
 PID sensorPid(SENSOR_KP, SENSOR_KD);
 
@@ -85,7 +85,7 @@ void setup() {
     setWall(0,0,270);
     
     //motion.driveDistance(52); // start flush to the wall, go to the center
-    motion.driveCell(27);
+    motion.driveCell(27, DRIVE_PID_NONE);
     while (!motion.completed()) {}
   }
 }

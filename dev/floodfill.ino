@@ -252,13 +252,13 @@ void mazeLoop() {
 
     // ram into the wall
     motion.driveDistance(-100);
-    motion.driveCell(-50);
+    motion.driveCell(-50, DRIVE_PID_NONE);
     while (!motion.completed()) {}
     delay(100);
 
     // come back to the center
     //motion.driveDistance(48);// lkg 40
-    motion.driveCell(27);
+    motion.driveCell(27, DRIVE_PID_NONE);
     while (!motion.completed()) {}
     delay(300); 
 
@@ -273,7 +273,7 @@ void mazeLoop() {
 
   // drive to the next cell's sensing point
   //motion.driveDistance(30);
-  motion.driveCell(17);
+  motion.driveCell(17, DRIVE_PID_NONE);
   while (!motion.completed()) {}
   //delay(100);
 
@@ -281,7 +281,21 @@ void mazeLoop() {
   checkAndUpdateSideWalls();
   
   //motion.driveDistance(150); // go to the middle of next cell
-  motion.driveCell(83);
+
+  if (checkWall(robotX, robotY, convertDirection(normalizeDirection(270)))) { // left wall present
+    motion.driveCell(63, DRIVE_PID_LEFT); // drive most of the way with PID
+    while (!motion.completed()) {}
+    motion.driveCell(20, DRIVE_PID_NONE); // drive the rest without to avoid turning from sensor messup
+  }
+  else if (checkWall(robotX, robotY, convertDirection(normalizeDirection(90)))) { // right wall present
+    motion.driveCell(63, DRIVE_PID_RIGHT); // drive most of the way with PID
+    while (!motion.completed()) {}
+    motion.driveCell(20, DRIVE_PID_NONE); // drive the rest without to avoid turning from sensor messup
+  }
+  else {
+    motion.driveCell(83, DRIVE_PID_NONE);
+  }
+  
   while (!motion.completed()) {}
  
   
