@@ -81,8 +81,8 @@ void setup() {
   mode = askForData("Select mode:").toInt();
   
   if (mode == 7) { // if solving
-    setWall(0,0,90); // set the left and write walls as present
-    setWall(0,0,270);
+    setWall(true, 0,0,90); // set the left and write walls as present
+    setWall(true, 0,0,270);
     
     //motion.driveDistance(52); // start flush to the wall, go to the center
     motion.driveCell(27, DRIVE_PID_NONE);
