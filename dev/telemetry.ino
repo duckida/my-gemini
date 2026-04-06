@@ -67,15 +67,15 @@ void sendMazeState() {
 
 // Send wall sensor state as JSON over Serial1
 // Call this after updating walls to report current sensor readings
-void sendWallState() {
-  if (!Serial1) {
-    return;
-  }
+// Add a parameter to track which sensing point
+void sendWallState(uint8_t sensingPoint) {
   Serial1.print("{\"sf\":");
   Serial1.print(frontSensorValue);
   Serial1.print(",\"sl\":");
   Serial1.print(leftSensorValue);
   Serial1.print(",\"sr\":");
   Serial1.print(rightSensorValue);
+  Serial1.print(",\"sp\":");
+  Serial1.print(sensingPoint);  // Add this
   Serial1.println("}");
 }

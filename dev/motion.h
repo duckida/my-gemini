@@ -41,8 +41,8 @@ class Motion {
       PID _motionPID;
       PID _sensorPID;
 
-      const int DRIVE_SPEED = 50;
-      const int TURN_SPEED = 60;
+      const int DRIVE_SPEED = 50; // 50
+      const int TURN_SPEED = 60; // 60
       
       // distance driving variables
       int _distancePulsesToGo = 0;

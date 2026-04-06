@@ -27,8 +27,8 @@ volatile int encoderDifference = 0; // right - left
 volatile float heading = 0.0;
 
 // PD controller values
-const float SENSOR_KP = 1.0;
-const float SENSOR_KD = 0.5;
+const float SENSOR_KP = 2.0; // 1.0
+const float SENSOR_KD = 0.5; // 0.5
 const int TARGET = 19;
 
 PID sensorPid(SENSOR_KP, SENSOR_KD);

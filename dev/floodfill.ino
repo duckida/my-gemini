@@ -131,13 +131,15 @@ void updateFlood() {
 }
 
 
+// WALL SENSOR FUNCTIONS
+
 // for multiple checks
 // +1 for yes, -1 for no
 // then we check: >0? then wall
 int leftWall = 0; 
 int rightWall = 0;
 
-void checkAndUpdateSideWalls() {
+void checkSideWalls() {
   printSensors();
   
   if (leftSensorValue > LEFT_GAP) { // there's a wall on the left 
@@ -151,7 +153,9 @@ void checkAndUpdateSideWalls() {
   } else {
     rightWall = rightWall - 1;
   }
+}
 
+void updateSideWalls() {
   if (leftWall > 0) { // we're sure there's a wall
     setWall(true, robotX, robotY, normalizeDirection(-90)); 
   } 
@@ -165,8 +169,6 @@ void checkAndUpdateSideWalls() {
   else {
     setWall(false, robotX, robotY, normalizeDirection(90)); 
   }
-  
-  sendWallState(); // sends to mousefriend app
 }
 
 void checkAndUpdateFrontWall() {
@@ -174,7 +176,7 @@ void checkAndUpdateFrontWall() {
     Serial1.println("WALL ON FRONT");
     setWall(true, robotX, robotY, robotDir); 
   }
-  sendWallState(); // sends to mousefriend app
+  sendWallState(0); // sends to mousefriend app
 }
 
 // --- MAZE SOLVING LOOP ---
@@ -305,52 +307,40 @@ void mazeLoop() {
   //motion.driveDistance(30);
   motion.driveCell(17, DRIVE_PID_NONE);
   while (!motion.completed()) {}
-  //delay(100);
 
   updatePosition();
   
-  checkAndUpdateSideWalls();
+  checkSideWalls(); // check the walls once at sensepoint 1
+  sendWallState(0); // send to mousefriend
+
+  motion.driveCell(43, DRIVE_PID_NONE); // drive the first segment without PID
+  while (!motion.completed()) {}
+  
+  checkSideWalls(); // check the walls again (sensepoint 2)
+  updateSideWalls(); // decide if there's a wall or not
+  sendWallState(1); // send to mousefriend
 
   if (checkWall(robotX, robotY, convertDirection(normalizeDirection(270)))) { // left wall present
-    motion.driveCell(43, DRIVE_PID_LEFT); // drive most of the way with PID
-    while (!motion.completed()) {}
-    
-    checkAndUpdateSideWalls(); // check the walls again (sensepoint 2)
-
     motion.driveCell(20, DRIVE_PID_LEFT); // drive a litle more of the way with PID
     while (!motion.completed()) {}
     
-    checkAndUpdateSideWalls(); // check the walls again (sensepoint 3)
-    
-    motion.driveCell(15, DRIVE_PID_NONE); // drive the rest without to avoid turning from sensor messup
+    checkSideWalls(); // check the walls again (sensepoint 3)
   }
   else if (checkWall(robotX, robotY, convertDirection(normalizeDirection(90)))) { // right wall present
-    motion.driveCell(43, DRIVE_PID_RIGHT); // drive most of the way with PID
+    motion.driveCell(20, DRIVE_PID_RIGHT); // drive a litle more of the way with PID
     while (!motion.completed()) {}
-
-    checkAndUpdateSideWalls(); // check the walls again (sensepoint 2)
-
-    motion.driveCell(20, DRIVE_PID_LEFT); // drive a litle more of the way with PID
-    while (!motion.completed()) {}
-    
-    checkAndUpdateSideWalls(); // check the walls again (sensepoint 3)
-    
-    motion.driveCell(15, DRIVE_PID_NONE); // drive the rest without to avoid turning from sensor messup
+    checkSideWalls(); // check the walls again (sensepoint 3)
   }
   else {
-    motion.driveCell(43, DRIVE_PID_NONE);
-    while (!motion.completed()) {}
-    
-    checkAndUpdateSideWalls(); // check the walls again (sensepoint 2)
-
     motion.driveCell(20, DRIVE_PID_NONE); 
     while (!motion.completed()) {}
-    
-    checkAndUpdateSideWalls(); // check the walls again (sensepoint 3)
-    
-    motion.driveCell(15, DRIVE_PID_NONE);
+    checkSideWalls(); // check the walls again (sensepoint 3)
   }
-  
+
+  sendWallState(2); // send to mousefriend
+  updateSideWalls(); // final desciscion
+
+  motion.driveCell(15, DRIVE_PID_NONE);
   while (!motion.completed()) {}
  
   sendMazeState();
