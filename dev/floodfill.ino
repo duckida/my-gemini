@@ -288,19 +288,17 @@ void mazeLoop() {
     while (!motion.completed()) {}
     delay(100);  
 
-    // ram into the wall
-    //motion.driveCell(-50, DRIVE_PID_NONE);
-    //while (!motion.completed()) {}
-    setMotors(-100, -100);
-    delay(600);
-    stop();
-
-    // come back to the center
-    //motion.driveDistance(48);// lkg 40
-    motion.driveCell(BACK_TO_MIDDLE, DRIVE_PID_NONE);
-    while (!motion.completed()) {}
-    delay(300); 
-
+    if (checkWall(robotX, robotY, convertDirection(normalizeDirection(180)))) { // make sure there's a wall behind
+      // ram into the wall
+      setMotors(-100, -100);
+      delay(600);
+      stop();
+  
+      // come back to the center
+      motion.driveCell(BACK_TO_MIDDLE, DRIVE_PID_NONE);
+      while (!motion.completed()) {}
+      delay(300); 
+    }
     
   } else if (relative != 0) {
     delay(100);
