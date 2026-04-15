@@ -357,5 +357,5 @@ void mazeLoop() {
  
   sendDebugState();
 
-  //delay(2000);
+  delay(2000);
 }
