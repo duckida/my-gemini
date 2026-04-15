@@ -3,6 +3,14 @@
 
 // --- DEFINITIONS ---
 
+// distances (cell percentage)
+#define BACK_TO_MIDDLE 27
+#define MIDDLE_TO_SP1 6
+#define SP1_TO_SP2 5
+#define SP2_TO_SP3 5
+#define SP3_TO_ALMOST_MIDDLE 69 // 84-15=69
+#define ALMOST_TO_MIDDLE 15
+
 // Queue setup
 struct Point {
   uint8_t x;
@@ -289,7 +297,7 @@ void mazeLoop() {
 
     // come back to the center
     //motion.driveDistance(48);// lkg 40
-    motion.driveCell(27, DRIVE_PID_NONE);
+    motion.driveCell(BACK_TO_MIDDLE, DRIVE_PID_NONE);
     while (!motion.completed()) {}
     delay(300); 
 
@@ -304,7 +312,7 @@ void mazeLoop() {
 
   // drive to the next cell's sensing point
   //motion.driveDistance(30);
-  motion.driveCell(17, DRIVE_PID_NONE);
+  motion.driveCell(MIDDLE_TO_SP1, DRIVE_PID_NONE);
   while (!motion.completed()) {}
 
   updatePosition();
@@ -312,31 +320,30 @@ void mazeLoop() {
   checkSideWalls(); // check the walls once at sensepoint 1
   sendSensorReadings(0); // send to mocusefriend
 
-  motion.driveCell(10, DRIVE_PID_NONE); // drive the first segment without PID
+  motion.driveCell(SP1_TO_SP2, DRIVE_PID_NONE); // drive the first segment without PID
   while (!motion.completed()) {}
   
   checkSideWalls(); // check the walls again (sensepoint 2)
   updateSideWalls(); // decide if there's a wall or not
   sendSensorReadings(1); // send to mousefriend
 
-  motion.driveCell(10, DRIVE_PID_NONE); // drive the next segment without PID
+  motion.driveCell(SP2_TO_SP3, DRIVE_PID_NONE); // drive the next segment without PID
   while (!motion.completed()) {}
   
   checkSideWalls(); // check the walls again (sensepoint 3)
   updateSideWalls(); // decide if there's a wall or not
   sendSensorReadings(2); // send to mousefriend
 
-  const int MIDDLE_DRIVE_DISTANCE = 37; //38
   if (checkWall(robotX, robotY, convertDirection(normalizeDirection(270)))) { // left wall present
-    motion.driveCell(MIDDLE_DRIVE_DISTANCE, DRIVE_PID_LEFT); // drive a litle more of the way with PID
+    motion.driveCell(SP3_TO_ALMOST_MIDDLE, DRIVE_PID_LEFT); // drive a litle more of the way with PID
     while (!motion.completed()) {}
   }
   else if (checkWall(robotX, robotY, convertDirection(normalizeDirection(90)))) { // right wall present
-    motion.driveCell(MIDDLE_DRIVE_DISTANCE, DRIVE_PID_RIGHT); // drive a litle more of the way with PID 40
+    motion.driveCell(SP3_TO_ALMOST_MIDDLE, DRIVE_PID_RIGHT); // drive a litle more of the way with PID 40
      while (!motion.completed()) {}
   }
   else {
-    motion.driveCell(MIDDLE_DRIVE_DISTANCE, DRIVE_PID_NONE); // 40
+    motion.driveCell(SP3_TO_ALMOST_MIDDLE, DRIVE_PID_NONE); // 40
     while (!motion.completed()) {}
   }
 
@@ -345,8 +352,10 @@ void mazeLoop() {
   
   //updateSideWalls(); // final descision
 
-  motion.driveCell(15, DRIVE_PID_NONE);//15
+  motion.driveCell(ALMOST_TO_MIDDLE, DRIVE_PID_NONE, true); // use braking only for this one
   while (!motion.completed()) {}
  
   sendDebugState();
+
+  //delay(2000);
 }

@@ -12,7 +12,7 @@ void testDriveDistance(int distance) {
 
 
 void testDriveCell(int cellPercentage) {
-  motion.driveCell(cellPercentage, DRIVE_PID_NONE);
+  motion.driveCell(cellPercentage, DRIVE_PID_NONE, true);
   while(!motion.completed()) {};
   delay(2000);
 }

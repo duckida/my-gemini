@@ -21,7 +21,7 @@ void updatePosition();
 void updatePositionBack();
 void resetHeadingVariable();
 float calculateDistancePulses(int mm);
-float calculateCellPulses(int cellPercentage);
+float calculateCellPulses(int cellPercentage, bool braking = false);
 float calculateAnglePulses(int deg);
 extern const float SENSOR_KP;
 extern const float SENSOR_KD;
@@ -96,7 +96,7 @@ class Motion {
     }
 
     
-    void driveCell(int cellPercentage, uint8_t useSensors) { // 100 is 1 cell etc.
+    void driveCell(int cellPercentage, uint8_t useSensors, bool braking = false) { // 100 is 1 cell etc.
       sensorPidSetting = useSensors;
       
       // reset encoders
@@ -112,7 +112,7 @@ class Motion {
       state = 3; // set the state
 
       // and go!
-      _cellPulsesToGo = abs(calculateCellPulses(cellPercentage)); // use ABS to ensure the number is always positive
+      _cellPulsesToGo = abs(calculateCellPulses(cellPercentage, braking)); // use ABS to ensure the number is always positive
       setMotors(cellSpeed, cellSpeed); // start the motors
     }
 
