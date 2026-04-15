@@ -15,17 +15,22 @@ extern volatile float heading;
 
 void setMotors(int left, int right);
 void stop();
+
 void updateDirection(int turnDir);
-float pulsesToDistance(int pulses);
 void updatePosition();
 void updatePositionBack();
-void resetHeadingVariable();
+
+float pulsesToDistance(int pulses);
 float calculateDistancePulses(int mm);
 float calculateCellPulses(int cellPercentage, bool braking = false);
 float calculateAnglePulses(int deg);
+
+void resetHeadingVariable();
+
 extern const float SENSOR_KP;
 extern const float SENSOR_KD;
-extern const int TARGET;
+extern const int LEFT_TARGET;
+extern const int RIGHT_TARGET;
 // end externs
 
 #define DRIVE_PID_NONE 0
@@ -35,7 +40,7 @@ extern const int TARGET;
 class Motion {
   private:
       // state: 0=idle 1=driveDistance 2=driveAngle 3=driveCell
-      volatile int state = 0;
+      volatile uint8_t state = 0;
       
       // pid variables
       PID _motionPID;
@@ -191,10 +196,10 @@ class Motion {
         else {
           float adjustment = 0;
           if (sensorPidSetting == DRIVE_PID_LEFT) {
-             adjustment = _sensorPID.calculate(leftSensorValue, TARGET);
+             adjustment = _sensorPID.calculate(leftSensorValue, LEFT_TARGET);
           } 
           else if (sensorPidSetting == DRIVE_PID_RIGHT) {
-            adjustment = (-1 * _sensorPID.calculate(rightSensorValue, TARGET));
+            adjustment = (-1 * _sensorPID.calculate(rightSensorValue, RIGHT_TARGET));
           }
           else {
              adjustment = _motionPID.calculate(encoderDifference, 0);

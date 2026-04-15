@@ -5,10 +5,10 @@
 
 // distances (cell percentage)
 #define BACK_TO_MIDDLE 27
-#define MIDDLE_TO_SP1 6
+#define MIDDLE_TO_SP1 16 
 #define SP1_TO_SP2 5
-#define SP2_TO_SP3 5
-#define SP3_TO_ALMOST_MIDDLE 69 // 84-15=69
+#define SP2_TO_SP3 5 
+#define SP3_TO_ALMOST_MIDDLE 59 // 84-15=69
 #define ALMOST_TO_MIDDLE 15
 
 // Queue setup
@@ -68,8 +68,8 @@ bool cellExists(int x, int y) {
 
 // sets all costs to 255 and sets the goal to 0
 void resetMaze() {
-  for(int i=0; i<MAZE_WIDTH; i++) {
-    for(int j=0; j<MAZE_HEIGHT; j++) {
+  for(uint8_t i=0; i<MAZE_WIDTH; i++) {
+    for(uint8_t j=0; j<MAZE_HEIGHT; j++) {
       maze[i][j].cost = 255;
     }
   }
@@ -116,7 +116,7 @@ void updateFlood() {
     uint8_t y = currentExaminingCell.y;
 
     
-    for (int wallDirection = 0; wallDirection < 4; wallDirection++) { // for each direction
+    for (uint8_t wallDirection = 0; wallDirection < 4; wallDirection++) { // for each direction
       if (checkWall(x, y, wallDirection) == false) { // there is no wall
         
         // get neighbors of the current examining cell
@@ -314,7 +314,7 @@ void mazeLoop() {
   //motion.driveDistance(30);
   motion.driveCell(MIDDLE_TO_SP1, DRIVE_PID_NONE);
   while (!motion.completed()) {}
-
+  
   updatePosition();
   
   checkSideWalls(); // check the walls once at sensepoint 1
@@ -357,5 +357,6 @@ void mazeLoop() {
  
   sendDebugState();
 
-  delay(2000);
+  //delay(500);
+  //delay(2000);
 }

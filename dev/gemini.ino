@@ -14,9 +14,9 @@ volatile int rightSensorValue = 0;
 //int rightSensor[10];
 
 // Wall thresholds
-const int LEFT_GAP = 11;
+const int LEFT_GAP = 8;
 const int FRONT_WALL = 30;
-const int RIGHT_GAP = 11;
+const int RIGHT_GAP = 8;
 
 // Encoder values
 volatile int leftEncoderValue = 0;
@@ -29,7 +29,8 @@ volatile float heading = 0.0;
 // PD controller values
 const float SENSOR_KP = 2.0; // 1.0
 const float SENSOR_KD = 0.5; // 0.5
-const int TARGET = 19; //18
+const int LEFT_TARGET = 17; //15
+const int RIGHT_TARGET = 21; //19
 
 // Debug levels
 #define DEBUG_NONE 0

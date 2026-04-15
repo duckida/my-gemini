@@ -25,7 +25,7 @@ void wallFollow() {
       }
 
       else {
-        float adj = sensorPid.calculate(leftSensorValue, TARGET);
+        float adj = sensorPid.calculate(leftSensorValue, LEFT_TARGET);
         setMotors(60 - adj, 60 + adj);
       }
       
