@@ -14,9 +14,9 @@ volatile int rightSensorValue = 0;
 //int rightSensor[10];
 
 // Wall thresholds
-const int LEFT_GAP = 9;
+const int LEFT_GAP = 7;
 const int FRONT_WALL = 30;
-const int RIGHT_GAP = 9;
+const int RIGHT_GAP = 7;
 
 // Encoder values
 volatile int leftEncoderValue = 0;
@@ -29,7 +29,12 @@ volatile float heading = 0.0;
 // PD controller values
 const float SENSOR_KP = 2.0; // 1.0
 const float SENSOR_KD = 0.5; // 0.5
-const int TARGET = 19;
+const int TARGET = 18; //18
+
+// Debug levels
+#define DEBUG_NONE 0
+#define DEBUG_MINIMAL 1
+#define DEBUG_FULL 2
 
 PID sensorPid(SENSOR_KP, SENSOR_KD);
 
@@ -77,12 +82,14 @@ void setup() {
   
   motion.setup(0.9, 0.5); // 0.9, 0.5
 
-  Serial1.println("1: print sensors, 2: test distance, 3: test angle, 4: wall follow, 5: hardcoded, 6: test MPU, 7: solve maze, 8: print encoders");
+  Serial1.println("1: print sensors, 2: test distance, 3: test angle, 4: wall follow, 5: hardcoded, 6: test MPU, 7: solve maze, 8: print encoders 9. drive cell 10. drive cell advanced");
   mode = askForData("Select mode:").toInt();
   
   if (mode == 7) { // if solving
-    setWall(true, 0,0,90); // set the left and write walls as present
-    setWall(true, 0,0,270);
+    setDebugLevel(DEBUG_MINIMAL); 
+    sendDebugState();
+    setWall(true,0,0,90); // set the left and write walls as present
+    setWall(true,0,0,270);
     
     //motion.driveDistance(52); // start flush to the wall, go to the center
     motion.driveCell(27, DRIVE_PID_NONE);
@@ -125,7 +132,7 @@ void loop() {
       break;
     case 7:
       mazeLoop();
-      printPosition();
+      // printPosition();
       break;
     case 8:
       printEncoders();
@@ -133,6 +140,11 @@ void loop() {
       break;
     case 9:
       testDriveCell(100);
+      break;
+    case 10:
+      int distance = askForData("Distance:").toInt();
+      testDriveCell(distance);
+      printEncoders();
       break;
   }
 };

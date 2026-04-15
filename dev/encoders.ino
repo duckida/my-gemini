@@ -118,9 +118,10 @@ float calculateAnglePulses(int deg) {
 }
 
 float calculateCellPulses(int cellPercentage) {
-  float pulsesPerCell = 1033.2;
+  const float pulsesPerCell = 1033.2;
+  const int BRAKING_PULSES = 25; // 57 overshot by this much - braking distance
 
-  return (pulsesPerCell / 100.0) * cellPercentage;
+  return ((pulsesPerCell / 100.0) * cellPercentage) - BRAKING_PULSES;
 }
 
 void resetEncoders() {

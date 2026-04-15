@@ -1,5 +1,4 @@
 // Gemini Floodfill module
-
 #include <queue>
 
 // --- DEFINITIONS ---
@@ -176,7 +175,7 @@ void checkAndUpdateFrontWall() {
     Serial1.println("WALL ON FRONT");
     setWall(true, robotX, robotY, robotDir); 
   }
-  sendWallState(0); // sends to mousefriend app
+  sendSensorReadings(0); // sends to mousefriend app
 }
 
 // --- MAZE SOLVING LOOP ---
@@ -233,7 +232,7 @@ void mazeLoop() {
   checkAndUpdateFrontWall(); 
   
   updateFlood();
-  sendMazeState();
+  sendDebugState();
 
   Cell lowestCostCell = maze[robotX][robotY]; // init with the current cell's cost
   int lowestCostDirection = 0; // the cell with lowest cost's absolute direction
@@ -285,7 +284,7 @@ void mazeLoop() {
     //motion.driveCell(-50, DRIVE_PID_NONE);
     //while (!motion.completed()) {}
     setMotors(-100, -100);
-    delay(400);
+    delay(600);
     stop();
 
     // come back to the center
@@ -311,37 +310,43 @@ void mazeLoop() {
   updatePosition();
   
   checkSideWalls(); // check the walls once at sensepoint 1
-  sendWallState(0); // send to mousefriend
+  sendSensorReadings(0); // send to mocusefriend
 
-  motion.driveCell(43, DRIVE_PID_NONE); // drive the first segment without PID
+  motion.driveCell(10, DRIVE_PID_NONE); // drive the first segment without PID
   while (!motion.completed()) {}
   
   checkSideWalls(); // check the walls again (sensepoint 2)
   updateSideWalls(); // decide if there's a wall or not
-  sendWallState(1); // send to mousefriend
+  sendSensorReadings(1); // send to mousefriend
 
+  motion.driveCell(10, DRIVE_PID_NONE); // drive the next segment without PID
+  while (!motion.completed()) {}
+  
+  checkSideWalls(); // check the walls again (sensepoint 3)
+  updateSideWalls(); // decide if there's a wall or not
+  sendSensorReadings(2); // send to mousefriend
+
+  const int MIDDLE_DRIVE_DISTANCE = 37; //38
   if (checkWall(robotX, robotY, convertDirection(normalizeDirection(270)))) { // left wall present
-    motion.driveCell(20, DRIVE_PID_LEFT); // drive a litle more of the way with PID
+    motion.driveCell(MIDDLE_DRIVE_DISTANCE, DRIVE_PID_LEFT); // drive a litle more of the way with PID
     while (!motion.completed()) {}
-    
-    checkSideWalls(); // check the walls again (sensepoint 3)
   }
   else if (checkWall(robotX, robotY, convertDirection(normalizeDirection(90)))) { // right wall present
-    motion.driveCell(20, DRIVE_PID_RIGHT); // drive a litle more of the way with PID
-    while (!motion.completed()) {}
-    checkSideWalls(); // check the walls again (sensepoint 3)
+    motion.driveCell(MIDDLE_DRIVE_DISTANCE, DRIVE_PID_RIGHT); // drive a litle more of the way with PID 40
+     while (!motion.completed()) {}
   }
   else {
-    motion.driveCell(20, DRIVE_PID_NONE); 
+    motion.driveCell(MIDDLE_DRIVE_DISTANCE, DRIVE_PID_NONE); // 40
     while (!motion.completed()) {}
-    checkSideWalls(); // check the walls again (sensepoint 3)
   }
 
-  sendWallState(2); // send to mousefriend
-  updateSideWalls(); // final desciscion
+  //checkSideWalls(); // check the walls again (sensepoint 3)
+  //sendSensorReadings(2); // send to mousefriend
+  
+  //updateSideWalls(); // final descision
 
-  motion.driveCell(15, DRIVE_PID_NONE);
+  motion.driveCell(15, DRIVE_PID_NONE);//15
   while (!motion.completed()) {}
  
-  sendMazeState();
+  sendDebugState();
 }
