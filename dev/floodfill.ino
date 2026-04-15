@@ -9,7 +9,7 @@
 #define SP1_TO_SP2 5
 #define SP2_TO_SP3 5 
 #define SP3_TO_ALMOST_MIDDLE 59 // 84-15=69
-#define ALMOST_TO_MIDDLE 15
+#define ALMOST_TO_MIDDLE 10 //15
 
 // Queue setup
 struct Point {
