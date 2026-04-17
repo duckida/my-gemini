@@ -5,11 +5,14 @@
 
 // distances (cell percentage)
 #define BACK_TO_MIDDLE 27
-#define MIDDLE_TO_SP1 16 
-#define SP1_TO_SP2 5
+#define MIDDLE_TO_SP1 16 //16
+#define SP1_TO_SP2 5 // 10
 #define SP2_TO_SP3 5 
-#define SP3_TO_ALMOST_MIDDLE 59 // 84-15=69
-#define ALMOST_TO_MIDDLE 10 //15
+#define SP3_TO_ALMOST_MIDDLE 52 // 84-15=69 == 59 is the one 54
+#define ALMOST_TO_MIDDLE 17 //15
+// these sum to 95%
+// the extra 5% is if there's no wall in front
+#define EXTRA_5_PERCENT 5 // 5
 
 // Queue setup
 struct Point {
@@ -315,8 +318,11 @@ void mazeLoop() {
   
   updatePosition();
   
+  on(13);
   checkSideWalls(); // check the walls once at sensepoint 1
   sendSensorReadings(0); // send to mocusefriend
+  off(13);
+  
 
   motion.driveCell(SP1_TO_SP2, DRIVE_PID_NONE); // drive the first segment without PID
   while (!motion.completed()) {}
@@ -350,11 +356,22 @@ void mazeLoop() {
   
   //updateSideWalls(); // final descision
 
-  motion.driveCell(ALMOST_TO_MIDDLE, DRIVE_PID_NONE, true); // use braking only for this one
+  motion.driveCell(ALMOST_TO_MIDDLE + EXTRA_5_PERCENT, DRIVE_PID_NONE, true); // use braking
   while (!motion.completed()) {}
+
+
+
+  /*if (frontSensorValue >= FRONT_WALL) { // wall in front
+    motion.driveCell(ALMOST_TO_MIDDLE, DRIVE_PID_NONE, true); // use braking & go the extra 5%
+    while (!motion.completed()) {}
+  }
+  else {
+      motion.driveCell(ALMOST_TO_MIDDLE + EXTRA_5_PERCENT, DRIVE_PID_NONE, true); // use braking
+      while (!motion.completed()) {}
+  }*/
  
   sendDebugState();
 
   //delay(500);
-  //delay(2000);
+  //delay(1000);
 }

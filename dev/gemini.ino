@@ -14,9 +14,9 @@ volatile int rightSensorValue = 0;
 //int rightSensor[10];
 
 // Wall thresholds
-const int LEFT_GAP = 8;
+const int LEFT_GAP = 14;
 const int FRONT_WALL = 30;
-const int RIGHT_GAP = 8;
+const int RIGHT_GAP = 14;
 
 // Encoder values
 volatile int leftEncoderValue = 0;
@@ -24,13 +24,14 @@ volatile int rightEncoderValue = 0;
 volatile int encoderDifference = 0; // right - left
 
 // MPU values
-volatile float heading = 0.0;
+volatile float heading = 0.0; // for turns
+volatile float globalHeading = 0.0; // for debugging
 
 // PD controller values
 const float SENSOR_KP = 2.0; // 1.0
 const float SENSOR_KD = 0.5; // 0.5
-const int LEFT_TARGET = 17; //15
-const int RIGHT_TARGET = 21; //19
+const int LEFT_TARGET = 20; //24
+const int RIGHT_TARGET = 27; //29
 
 // Debug levels
 #define DEBUG_NONE 0

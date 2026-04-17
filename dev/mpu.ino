@@ -57,7 +57,14 @@ void updateMpu() {
   lastTime = now;
 
   float rateZ = (gyro.gyro.z - gyroBiasZ) * (180.0 / PI);
-  if (abs(rateZ) > 0.3) heading += rateZ * dt;
+  if (abs(rateZ) > 0.3) {
+    // We calculate the movement once...
+    float delta = rateZ * dt; 
+    
+    // ...and apply it to both "buckets"
+    heading += delta;       
+    globalHeading += delta; 
+  }
 }
 
 void printMpu() {

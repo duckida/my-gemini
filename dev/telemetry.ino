@@ -1,10 +1,8 @@
 // Gemini Telemetry Module
-// Written by MiMo V2 Pro AI
+// Written by OpenCode AI
 // Serializes maze state data to JSON and transmits over Serial1 (HC-05 Bluetooth)
-
 // Track if setup payload has been sent
 bool telemetryInitialized = false;
-
 int debugLevel = DEBUG_FULL;
 
 // Send setup payload once at initialization
@@ -51,6 +49,8 @@ void sendMinimalState() {
   Serial1.print(leftSensorValue);
   Serial1.print(",\"sr\":");
   Serial1.print(rightSensorValue);
+  Serial1.print(",\"gh\":");
+  Serial1.print(globalHeading);
   Serial1.println("}");
 }
 // Send full maze state as JSON over Serial1
@@ -76,6 +76,8 @@ void sendMazeState() {
   Serial1.print(robotY);
   Serial1.print(",\"rd\":");
   Serial1.print(robotDir);
+  Serial1.print(",\"gh\":");
+  Serial1.print(globalHeading);
   Serial1.print(",\"c\":[");
   // Serialize cell array
   for (int x = 0; x < MAZE_WIDTH; x++) {
@@ -142,6 +144,8 @@ void sendWallState() {
   Serial1.print(leftSensorValue);
   Serial1.print(",\"sr\":");
   Serial1.print(rightSensorValue);
+  Serial1.print(",\"gh\":");
+  Serial1.print(globalHeading);
   Serial1.println("}");
 }
 // Send sensor readings with sensing point index (0, 1, or 2)
@@ -164,5 +168,7 @@ void sendSensorReadings(int sensingPoint) {
   Serial1.print(robotY);
   Serial1.print(",\"rd\":");
   Serial1.print(robotDir);
+  Serial1.print(",\"gh\":");
+  Serial1.print(globalHeading);
   Serial1.println("}");
 }
