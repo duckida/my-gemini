@@ -28,10 +28,10 @@ volatile float heading = 0.0; // for turns
 volatile float globalHeading = 0.0; // for debugging
 
 // PD controller values
-const float SENSOR_KP = 2.0; // 1.0
-const float SENSOR_KD = 0.5; // 0.5
-const int LEFT_TARGET = 20; //24
-const int RIGHT_TARGET = 27; //29
+const float SENSOR_KP = 1.0; // 2.0
+const float SENSOR_KD = 0.8; // 0.5
+int LEFT_TARGET = 29; //24
+int RIGHT_TARGET = 33; //29
 
 // Debug levels
 #define DEBUG_NONE 0
@@ -88,10 +88,14 @@ void setup() {
   mode = askForData("Select mode:").toInt();
   
   if (mode == 7) { // if solving
+    globalHeading = 0.0;
     setDebugLevel(DEBUG_MINIMAL); 
     sendDebugState();
     setWall(true,0,0,90); // set the left and write walls as present
     setWall(true,0,0,270);
+
+    LEFT_TARGET = leftSensorValue;
+    RIGHT_TARGET = rightSensorValue;
     
     //motion.driveDistance(52); // start flush to the wall, go to the center
     motion.driveCell(27, DRIVE_PID_NONE);

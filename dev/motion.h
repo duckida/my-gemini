@@ -12,6 +12,7 @@ extern volatile int rightSensorValue;
 extern volatile int encoderDifference;
 
 extern volatile float heading;
+extern volatile float globalHeading;
 
 void setMotors(int left, int right);
 void stop();
@@ -29,8 +30,8 @@ void resetHeadingVariable();
 
 extern const float SENSOR_KP;
 extern const float SENSOR_KD;
-extern const int LEFT_TARGET;
-extern const int RIGHT_TARGET;
+extern int LEFT_TARGET;
+extern int RIGHT_TARGET;
 // end externs
 
 #define DRIVE_PID_NONE 0
@@ -60,6 +61,7 @@ class Motion {
       int cellDirection = 1;
       int cellSpeed = DRIVE_SPEED * cellDirection;
       uint8_t sensorPidSetting = DRIVE_PID_NONE;
+      float targetGlobalHeading = 0.0;
 
       // angle driving variables
       int _angleDegreesToGo = 0;
@@ -203,7 +205,8 @@ class Motion {
             adjustment = (-1 * _sensorPID.calculate(rightSensorValue, RIGHT_TARGET));
           }
           else {
-             adjustment = _motionPID.calculate(heading, 0); // use encoderDifference for encoder-based straight, or heading for MPU-based straight driving
+             targetGlobalHeading = round(globalHeading / 90.0) * 90.0;
+             adjustment = _motionPID.calculate(globalHeading, targetGlobalHeading); // use (encoderDifference,0) for encoder-based straight, or (heading,0) for smaller MPU-based straight driving
           }
           setMotors(cellSpeed, cellSpeed + adjustment); 
         }

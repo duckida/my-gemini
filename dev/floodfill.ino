@@ -5,10 +5,10 @@
 
 // distances (cell percentage)
 #define BACK_TO_MIDDLE 27
-#define MIDDLE_TO_SP1 16 //16
+#define MIDDLE_TO_SP1 26 //16
 #define SP1_TO_SP2 5 // 10
 #define SP2_TO_SP3 5 
-#define SP3_TO_ALMOST_MIDDLE 52 // 84-15=69 == 59 is the one 54
+#define SP3_TO_ALMOST_MIDDLE 42 // 84-15=69 == 59 is the one 54
 #define ALMOST_TO_MIDDLE 17 //15
 // these sum to 95%
 // the extra 5% is if there's no wall in front
@@ -296,6 +296,10 @@ void mazeLoop() {
       setMotors(-100, -100);
       delay(600);
       stop();
+
+      delay(100);
+      globalHeading = round(globalHeading / 90.0) * 90.0; // reset the heading to a nice flat one
+      delay(50);
   
       // come back to the center
       motion.driveCell(BACK_TO_MIDDLE, DRIVE_PID_NONE);
@@ -350,7 +354,7 @@ void mazeLoop() {
     motion.driveCell(SP3_TO_ALMOST_MIDDLE, DRIVE_PID_NONE); // 40
     while (!motion.completed()) {}
   }
-
+ 
   //checkSideWalls(); // check the walls again (sensepoint 3)
   //sendSensorReadings(2); // send to mousefriend
   
