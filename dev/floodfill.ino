@@ -8,8 +8,8 @@
 #define MIDDLE_TO_SP1 26 //16
 #define SP1_TO_SP2 5 // 10
 #define SP2_TO_SP3 5 
-#define SP3_TO_ALMOST_MIDDLE 42 // 84-15=69 == 59 is the one 54
-#define ALMOST_TO_MIDDLE 17 //15
+#define SP3_TO_ALMOST_MIDDLE 41 // 84-15=69 == 59 is the one 42
+#define ALMOST_TO_MIDDLE 18 //15 17
 // these sum to 95%
 // the extra 5% is if there's no wall in front
 #define EXTRA_5_PERCENT 5 // 5
