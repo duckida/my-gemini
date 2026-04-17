@@ -187,6 +187,7 @@ class Motion {
       }
 
       else if (state == 3) { // driving cells
+        resetHeadingVariable();
         int encoderAvg = (abs(leftEncoderValue) + abs(rightEncoderValue)) / 2; // use ABS to ensure the number is always positive
         if (encoderAvg >= _cellPulsesToGo) { // moved enough
           stop();
@@ -202,7 +203,7 @@ class Motion {
             adjustment = (-1 * _sensorPID.calculate(rightSensorValue, RIGHT_TARGET));
           }
           else {
-             adjustment = _motionPID.calculate(encoderDifference, 0);
+             adjustment = _motionPID.calculate(heading, 0); // use encoderDifference for encoder-based straight, or heading for MPU-based straight driving
           }
           setMotors(cellSpeed, cellSpeed + adjustment); 
         }
