@@ -34,8 +34,8 @@ struct Cell {
 
 // defining the maze
 // 16x16 also works!
-const uint8_t MAZE_WIDTH = 3;
-const uint8_t MAZE_HEIGHT = 6;
+const uint8_t MAZE_WIDTH = 16; //3
+const uint8_t MAZE_HEIGHT = 16; //6
 
 const uint8_t GOAL_X = 2;
 const uint8_t GOAL_Y = 5;
