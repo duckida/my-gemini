@@ -37,8 +37,8 @@ struct Cell {
 const uint8_t MAZE_WIDTH = 16; //3
 const uint8_t MAZE_HEIGHT = 16; //6
 
-const uint8_t GOAL_X = 2;
-const uint8_t GOAL_Y = 5;
+const uint8_t GOAL_X = 8;
+const uint8_t GOAL_Y = 8;
 
 uint8_t targetX = GOAL_X;
 uint8_t targetY = GOAL_Y;
@@ -192,6 +192,8 @@ void checkAndUpdateFrontWall() {
 // --- MAZE SOLVING LOOP ---
 // to return it just sets target to 0,0
 
+int straightCounter = 0;
+
 void mazeLoop() {
   /*
 [x] Check walls 
@@ -262,7 +264,7 @@ void mazeLoop() {
     if (cellExists(neighborX, neighborY)) {
       Cell neighbor = maze[neighborX][neighborY];
   
-      if (neighbor.cost < lowestCostCell.cost && !checkWall(robotX, robotY, convertDirection(neighborDir)))  { // the neighbor is the cheapest seen so far & there's no blocking wall
+      if (neighbor.cost <= lowestCostCell.cost && !checkWall(robotX, robotY, convertDirection(neighborDir)))  { // the neighbor is the cheapest seen so far & there's no blocking wall
         lowestCostCell = neighbor;
         lowestCostDirection = neighborDir;
       }
@@ -279,6 +281,7 @@ void mazeLoop() {
   if (relative > 180) relative -= 360;
 
   if (relative == 180) { // turn in 90º intervals
+    straightCounter = 0;
     delay(100);
     
     // turn the first 90º
@@ -308,6 +311,7 @@ void mazeLoop() {
     }
     
   } else if (relative != 0) {
+    straightCounter = 0;
     delay(100);
     
     motion.driveAngle(relative);
@@ -360,9 +364,16 @@ void mazeLoop() {
   
   //updateSideWalls(); // final descision
 
+  /*if (straightCounter > 4) {
+    motion.driveCell(ALMOST_TO_MIDDLE + EXTRA_5_PERCENT + 5, DRIVE_PID_NONE, true); //  2 extra for making up
+    straightCounter = 0;
+  }
+  else {
+    motion.driveCell(ALMOST_TO_MIDDLE + EXTRA_5_PERCENT, DRIVE_PID_NONE, true); // use braking
+    while (!motion.completed()) {}
+  }*/
   motion.driveCell(ALMOST_TO_MIDDLE + EXTRA_5_PERCENT, DRIVE_PID_NONE, true); // use braking
   while (!motion.completed()) {}
-
 
 
   /*if (frontSensorValue >= FRONT_WALL) { // wall in front
@@ -375,6 +386,8 @@ void mazeLoop() {
   }*/
  
   sendDebugState();
+
+  straightCounter += 1;
 
   //delay(500);
   //delay(1000);
